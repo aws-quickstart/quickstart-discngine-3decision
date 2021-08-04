@@ -26,6 +26,3 @@ tests:
       # PerAccountSharedResources: 'No'
       # PerRegionSharedResources: 'No'
     template: templates/discngine-3decision-main.template.yaml
-general:
-  auth:
-    default: Wrapped
