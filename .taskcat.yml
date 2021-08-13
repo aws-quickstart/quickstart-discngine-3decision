@@ -5,7 +5,6 @@ project:
   - eu-central-1
   template: templates/discngine-3decision-main.template.yaml
   s3_regional_buckets: true
-  package_lambda: false
   parameters:
     RemoteAccessCIDR: 10.0.0.0/16
     QSS3BucketName: $[taskcat_autobucket]
