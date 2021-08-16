@@ -18,6 +18,6 @@ tests:
     parameters:
       AvailabilityZones: $[taskcat_genaz_3]
       KeyPairName: quickstart-3dec
-      PerAccountSharedResources: 'No'
-      PerRegionSharedResources: 'No'
+      PerAccountSharedResources: 'Yes'
+      PerRegionSharedResources: 'Yes'
     template: templates/discngine-3decision-main.template.yaml
