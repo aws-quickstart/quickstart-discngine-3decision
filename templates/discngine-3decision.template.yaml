@@ -9,29 +9,98 @@ Metadata:
     - 3decision
   AWS::CloudFormation::Interface:
     ParameterGroups:
-      #      # TODO Add your parameters here
       - Label:
-          default: "Discngine 3decision configuration"
+          default: "Discngine 3decision dns configuration"
         Parameters:
-          - SampleParam1
+          - HostedZoneId
+          - HostedZoneName
+      - Label:
+          default: "Discngine 3decision kube configuration"
+        Parameters:
+          - TNamespace
+          - RegistrySecretName
+          - JWTSecretName
+          - JWTPrivateKey
+          - JWTPublicKey
+          - EKSClusterName
     ParameterLabels:
-      SampleParam1:
+      HostedZoneId:
+        default: Sample Param
+      HostedZoneName:
+        default: Sample Param
+      TNamespace:
+        default: Sample Param
+      RegistrySecretName:
+        default: Sample Param
+      JWTSecretName:
+        default: Sample Param
+      JWTPrivateKey:
+        default: Sample Param
+      JWTPublicKey:
+        default: Sample Param
+      EKSClusterName:
         default: Sample Param
 Parameters:
-  # TODO Add Discngine 3decision parameters
-  SampleParam1:
-    Default: 'Hello world!'
-    Description: Sample parameter.
-    Type: String
+  ### DNS PARAMETERS
+  HostedZoneId:
+    default: ""
+    description: "The ID of the hosted zone that you want to create records in."
+    type: String
+  HostedZoneName:
+    default: ""
+    description: "The Name of the hosted zone that you want to create records in."
+    type: String
+  ### KUBE PARAMETERS
+  TNamespace:
+    default: tdecision
+    description: ""
+    type: String
+  RegistrySecretName:
+    default: ociregistry
+    description: ""
+    type: String
+  JWTSecretName:
+    default: 3decision-jwt-secret
+    description: ""
+    type: String
+  JWTPrivateKey:
+    description: ""
+    type: String
+    NoEcho: true
+  JWTPublicKey:
+    description: ""
+    type: String
+  EKSClusterName:
+    description: ""
+    type: String
 
 Resources:
-  ParamA:
-    Type: AWS::SSM::Parameter
+  DNSRecord:
+    Type: AWS::CloudFormation::Stack
     Properties:
-      Type: String
-      Value: !Ref SampleParam1
-
-Outputs:
-  ParamOut:
-    Description: "Sample output"
-    Value: !Ref ParamA
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-dns.template.yaml'
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Parameters:
+        HostedZoneId: !GetAtt HostedZoneId
+        HostedZoneName: !GetAtt HostedZoneName
+  3decisionKubeStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: DNSRecord
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-kube.template.yaml'
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Parameters:
+        TNamespace: !GetAtt TNamespace
+        RegistrySecretName: !GetAtt RegistrySecretName
+        RegistryServer: !GetAtt RegistryServer
+        RegistryUsername: !GetAtt RegistryUsername
+        RegistryPassword: !GetAtt RegistryPassword
+        JWTSecretName: !GetAtt JWTSecretName
+        JWTPrivateKey: !GetAtt JWTPrivateKey
+        JWTPublicKey: !GetAtt JWTPublicKey
+        EKSClusterName: !GetAtt EKSClusterName
+        LoadBalancerEIP: !GetAtt DNSRecord.LoadBalancerEIP

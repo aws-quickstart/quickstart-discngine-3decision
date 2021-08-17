@@ -316,4 +316,4 @@ Resources:
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
           S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
-        SampleParam1: !Ref SampleParam1
+        EKSClusterName: !GetAtt EKSStack.Outputs.EKSClusterName
