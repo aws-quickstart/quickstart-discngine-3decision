@@ -34,7 +34,6 @@ Parameters:
 Resources:
   IngressNginxNamespace:
     Type: "AWSTEST::Kubernetes::Resource"
-    DependsOn: ApplyResourceVersion
     Properties:
       ClusterName: !Ref EKSClusterName
       Namespace: kube-system
@@ -57,7 +56,6 @@ Resources:
         controller.service.loadBalancerIP: !Ref LoadBalancerEIP
   TDecisionNamespace:
     Type: "AWSQS::Kubernetes::Resource"
-    DependsOn: ApplyResourceVersion
     Properties:
       ClusterName: !Ref EKSClusterName
       Namespace: 'kube-system'
