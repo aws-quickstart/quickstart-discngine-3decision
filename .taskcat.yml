@@ -3,7 +3,7 @@ project:
   owner: quickstart-eng@amazon.com
   regions:
   - eu-central-1
-  template: templates/discngine-3decision-main.template.yaml
+  template: templates/discngine-3decision.template.yaml
   s3_regional_buckets: true
   parameters:
     RemoteAccessCIDR: 10.0.0.0/16
