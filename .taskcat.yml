@@ -20,7 +20,7 @@ tests:
       AvailabilityZones: $[taskcat_genaz_3]
       KeyPairName: quickstart-3dec
       TMPPassword: uX5#cRguB8LVGbO1gt-6
-      EKSClusterName: arn:aws:eks:eu-central-1:751149478800:cluster/test
+      EKSClusterName: test
       JWTPrivateKey: LS0
       JWTPublicKey: LS0
     template: templates/discngine-3decision.template.yaml
