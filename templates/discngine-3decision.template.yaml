@@ -116,6 +116,7 @@ Parameters:
     Default: idcs_federation/jonathan.manassen@discngine.com
   TMPPassword:
     Type: String
+    NoEcho: true
 
 Resources:
   DNSRecord:

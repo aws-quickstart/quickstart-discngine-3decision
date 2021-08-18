@@ -30,6 +30,7 @@ Parameters:
     Type: String
   TMPPassword:
     Type: String
+    NoEcho: true
 
 Resources:
   IngressNginxNamespace:
@@ -64,27 +65,6 @@ Resources:
         apiVersion: v1
         metadata:
           name: ${TNamespace}
-  RegistryAccessSecret:
-    Type: "AWSQS::Kubernetes::Resource"
-    DependsOn: TDecisionNamespace
-    Properties:
-      ClusterName: !Ref EKSClusterName
-      Namespace: !Ref TNamespace
-      Manifest: !Sub |
-        kind: Secret
-        apiVersion: v1
-        type: kubernetes.io/dockerconfigjson
-        metadata:
-          name = ${RegistrySecretName}
-          namespace = ${TNamespace}
-        data: |
-          {
-            "auths": {
-              "${TMPServer}": {
-                "auth": "${base64encode("${TMPUsername}:${TMPPassword}")}"
-              }
-            }
-          }
   JWTSecret:
     Type: "AWSQS::Kubernetes::Resource"
     DependsOn: TDecisionNamespace
