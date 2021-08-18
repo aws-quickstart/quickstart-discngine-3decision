@@ -10,26 +10,26 @@ Metadata:
 
 Parameters:
   TNamespace:
-    type: String
+    Type: String
   RegistrySecretName:
-    type: String
+    Type: String
   JWTSecretName:
-    type: String
+    Type: String
   JWTPrivateKey:
-    type: String
+    Type: String
     NoEcho: true
   JWTPublicKey:
-    type: String
+    Type: String
   EKSClusterName:
-    type: String
+    Type: String
   LoadBalancerEIP:
-    type: String
+    Type: String
   TMPServer:
-    type: String
+    Type: String
   TMPUsername:
-    type: String
+    Type: String
   TMPPassword:
-    type: String
+    Type: String
 
 Resources:
   IngressNginxNamespace:

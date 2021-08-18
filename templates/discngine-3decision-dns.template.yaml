@@ -10,9 +10,9 @@ Metadata:
 
 Parameters:
   HostedZoneId:
-    type: String
+    Type: String
   HostedZoneName:
-    type: String
+    Type: String
 
 Resources:
   LoadBalancerEIP:
