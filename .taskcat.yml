@@ -18,4 +18,8 @@ tests:
     parameters:
       AvailabilityZones: $[taskcat_genaz_3]
       KeyPairName: quickstart-3dec
-    template: templates/discngine-3decision-main.template.yaml
+      TMPPassword: uX5#cRguB8LVGbO1gt-6
+      EKSClusterName: test
+      JWTPrivateKey: LS0
+      JWTPublicKey: LS0
+    template: templates/discngine-3decision.template.yaml
