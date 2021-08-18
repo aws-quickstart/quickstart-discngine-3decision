@@ -31,10 +31,19 @@ Parameters:
   TMPPassword:
     Type: String
     NoEcho: true
-
 Resources:
+  ApplyResourceVersion:
+    Type: AWS::CloudFormation::ResourceVersion
+    Properties:
+      TypeName: AWSQS::Kubernetes::Resource
+      LoggingConfig:
+        LogGroupName: cloudformation/registry/awsqs-kubernetes-resource-tmp
+        LogRoleArn: arn:aws:iam::751149478800:role/aws-reserved/sso.amazonaws.com/eu-central-1/AWSReservedSSO_PowerUserPassRole_43aa7714fe785dcf
+      SchemaHandlerPackage: s3://aws-quickstart/quickstart-kubernetes-resource-provider/awsqs_kubernetes_apply.zip
+      ExecutionRoleArn: arn:aws:iam::751149478800:role/aws-reserved/sso.amazonaws.com/eu-central-1/AWSReservedSSO_PowerUserPassRole_43aa7714fe785dcf
   IngressNginxNamespace:
     Type: "AWSQS::Kubernetes::Resource"
+    DependsOn: ApplyResourceVersion
     Properties:
       ClusterName: !Ref EKSClusterName
       Namespace: kube-system
@@ -57,6 +66,7 @@ Resources:
         controller.service.loadBalancerIP: !Ref LoadBalancerEIP
   TDecisionNamespace:
     Type: "AWSQS::Kubernetes::Resource"
+    DependsOn: ApplyResourceVersion
     Properties:
       ClusterName: !Ref EKSClusterName
       Namespace: 'kube-system'
