@@ -4,4 +4,4 @@
 taskcat_outputs
 .DS_Store
 screen-logs.txt
-lambda.zip
+*.zip
