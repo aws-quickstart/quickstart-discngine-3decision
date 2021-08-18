@@ -146,7 +146,7 @@ Resources:
         JWTPrivateKey: !Ref JWTPrivateKey
         JWTPublicKey: !Ref JWTPublicKey
         EKSClusterName: !Ref EKSClusterName
-        LoadBalancerEIP: !GetAtt DNSRecord.LoadBalancerEIP
+        LoadBalancerEIP: !GetAtt DNSRecord.Outputs.LoadBalancerEIP
         TMPServer: !Ref TMPServer
         TMPUsername: !Ref TMPUsername
         TMPPassword: !Ref TMPPassword
