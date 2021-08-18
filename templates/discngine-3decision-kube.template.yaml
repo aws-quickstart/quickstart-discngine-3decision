@@ -24,6 +24,12 @@ Parameters:
     type: String
   LoadBalancerEIP:
     type: String
+  TMPServer:
+    type: String
+  TMPUsername:
+    type: String
+  TMPPassword:
+    type: String
 
 Resources:
   IngressNginxNamespace:
@@ -74,8 +80,8 @@ Resources:
         data: |
           {
             "auths": {
-              "SERVER": {
-                "auth": "${base64encode("USERNAME:PASSWORD")}"
+              "${ TMPServer }": {
+                "auth": "${base64encode("${ TMPUsername }:${ TMPPassword }")}"
               }
             }
           }

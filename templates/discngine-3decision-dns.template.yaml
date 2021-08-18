@@ -23,24 +23,24 @@ Resources:
       Tags:
         - Key: Name
           Value: LoadBalancerEIP
-  DNSRecord3dec:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      HostedZoneId : !Ref HostedZoneID
-      Name: !Join ['', ['3decision', ., !Ref 'HostedZone', .]]
-      ResourceRecords:
-      - !Ref LoadBalancerEIP
-      TTL: 900
-      Type: A
-  DNSRecordPP:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      HostedZoneId : !Ref HostedZoneID
-      Name: !Join ['', ['3decision-pp', ., !Ref 'HostedZone', .]]
-      ResourceRecords:
-      - !Ref LoadBalancerEIP
-      TTL: 900
-      Type: A
+#  DNSRecord3dec:
+#    Type: AWS::Route53::RecordSet
+#    Properties:
+#      HostedZoneId : !Ref HostedZoneID
+#      Name: !Join ['', ['3decision', ., !Ref 'HostedZone', .]]
+#      ResourceRecords:
+#      - !Ref LoadBalancerEIP
+#      TTL: 900
+#      Type: A
+#  DNSRecordPP:
+#    Type: AWS::Route53::RecordSet
+#    Properties:
+#      HostedZoneId : !Ref HostedZoneID
+#      Name: !Join ['', ['3decision-pp', ., !Ref 'HostedZone', .]]
+#      ResourceRecords:
+#      - !Ref LoadBalancerEIP
+#      TTL: 900
+#      Type: A
 Outputs:
   LoadBalancerEIP:
     Value: !Ref LoadBalancerEIP
