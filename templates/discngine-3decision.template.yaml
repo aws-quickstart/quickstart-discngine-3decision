@@ -64,14 +64,22 @@ Parameters:
     description: ""
     type: String
   JWTPrivateKey:
-    description: ""
+    description: "An SSH private key in base64 format"
     type: String
     NoEcho: true
   JWTPublicKey:
-    description: ""
+    description: "An SSH public key in base64 format"
     type: String
   EKSClusterName:
     description: ""
+    type: String
+  TMPServer:
+    type: String
+    default: fra.ocir.io
+  TMPUsername:
+    type: String
+    default: idcs_federation/jonathan.manassen@discngine.com
+  TMPPassword:
     type: String
 
 Resources:
@@ -104,3 +112,6 @@ Resources:
         JWTPublicKey: !GetAtt JWTPublicKey
         EKSClusterName: !GetAtt EKSClusterName
         LoadBalancerEIP: !GetAtt DNSRecord.LoadBalancerEIP
+        TMPServer: !GetAtt TMPServer
+        TMPUsername: !GetAtt TMPUsername
+        TMPPassword: !GetAtt TMPPassword
