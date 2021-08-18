@@ -16,8 +16,6 @@ Parameters:
 
 Resources:
   LoadBalancerEIP:
-    Condition: NATGateways&PublicSubnets&PrivateSubnetsCondition
-    DependsOn: VPCGatewayAttachment
     Type: AWS::EC2::EIP
     Properties:
       Tags:
