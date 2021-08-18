@@ -91,8 +91,8 @@ Resources:
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
           S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
-        HostedZoneId: !GetAtt HostedZoneId
-        HostedZoneName: !GetAtt HostedZoneName
+        HostedZoneId: !Ref HostedZoneId
+        HostedZoneName: !Ref HostedZoneName
   3decisionKubeStack:
     Type: AWS::CloudFormation::Stack
     DependsOn: DNSRecord
@@ -102,16 +102,16 @@ Resources:
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
           S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
-        TNamespace: !GetAtt TNamespace
-        RegistrySecretName: !GetAtt RegistrySecretName
-        RegistryServer: !GetAtt RegistryServer
-        RegistryUsername: !GetAtt RegistryUsername
-        RegistryPassword: !GetAtt RegistryPassword
-        JWTSecretName: !GetAtt JWTSecretName
-        JWTPrivateKey: !GetAtt JWTPrivateKey
-        JWTPublicKey: !GetAtt JWTPublicKey
-        EKSClusterName: !GetAtt EKSClusterName
+        TNamespace: !Ref TNamespace
+        RegistrySecretName: !Ref RegistrySecretName
+        RegistryServer: !Ref RegistryServer
+        RegistryUsername: !Ref RegistryUsername
+        RegistryPassword: !Ref RegistryPassword
+        JWTSecretName: !Ref JWTSecretName
+        JWTPrivateKey: !Ref JWTPrivateKey
+        JWTPublicKey: !Ref JWTPublicKey
+        EKSClusterName: !Ref EKSClusterName
         LoadBalancerEIP: !GetAtt DNSRecord.LoadBalancerEIP
-        TMPServer: !GetAtt TMPServer
-        TMPUsername: !GetAtt TMPUsername
-        TMPPassword: !GetAtt TMPPassword
+        TMPServer: !Ref TMPServer
+        TMPUsername: !Ref TMPUsername
+        TMPPassword: !Ref TMPPassword
