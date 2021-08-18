@@ -43,44 +43,44 @@ Metadata:
 Parameters:
   ### DNS PARAMETERS
   HostedZoneId:
-    default: ""
-    description: "The ID of the hosted zone that you want to create records in."
-    type: String
+    Default: AWS::NoValue
+    Description: "The ID of the hosted zone that you want to create records in."
+    Type: String
   HostedZoneName:
-    default: ""
-    description: "The Name of the hosted zone that you want to create records in."
-    type: String
+    Default: AWS::NoValue
+    Description: "The Name of the hosted zone that you want to create records in."
+    Type: String
   ### KUBE PARAMETERS
   TNamespace:
-    default: tdecision
-    description: ""
-    type: String
+    Default: tdecision
+    Description: ""
+    Type: String
   RegistrySecretName:
-    default: ociregistry
-    description: ""
-    type: String
+    Default: ociregistry
+    Description: ""
+    Type: String
   JWTSecretName:
-    default: 3decision-jwt-secret
-    description: ""
-    type: String
+    Default: 3decision-jwt-secret
+    Description: ""
+    Type: String
   JWTPrivateKey:
-    description: "An SSH private key in base64 format"
-    type: String
+    Description: "An SSH private key in base64 format"
+    Type: String
     NoEcho: true
   JWTPublicKey:
-    description: "An SSH public key in base64 format"
-    type: String
+    Description: "An SSH public key in base64 format"
+    Type: String
   EKSClusterName:
-    description: ""
-    type: String
+    Description: ""
+    Type: String
   TMPServer:
-    type: String
-    default: fra.ocir.io
+    Type: String
+    Default: fra.ocir.io
   TMPUsername:
-    type: String
-    default: idcs_federation/jonathan.manassen@discngine.com
+    Type: String
+    Default: idcs_federation/jonathan.manassen@discngine.com
   TMPPassword:
-    type: String
+    Type: String
 
 Resources:
   DNSRecord:
