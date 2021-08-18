@@ -63,7 +63,7 @@ Resources:
         kind: Namespace
         apiVersion: v1
         metadata:
-          name: ${ TNamespace }
+          name: ${TNamespace}
   RegistryAccessSecret:
     Type: "AWSQS::Kubernetes::Resource"
     DependsOn: TDecisionNamespace
@@ -75,13 +75,13 @@ Resources:
         apiVersion: v1
         type: kubernetes.io/dockerconfigjson
         metadata:
-          name = ${ RegistrySecretName }
-          namespace = ${ TNamespace }
+          name = ${RegistrySecretName}
+          namespace = ${TNamespace}
         data: |
           {
             "auths": {
-              "${ TMPServer }": {
-                "auth": "${base64encode("${ TMPUsername }:${ TMPPassword }")}"
+              "${TMPServer}": {
+                "auth": "${base64encode("${TMPUsername}:${TMPPassword}")}"
               }
             }
           }
@@ -96,8 +96,8 @@ Resources:
         apiVersion: v1
         type: opaque
         metadata:
-          name = ${ JWTSecretName }
-          namespace = ${ TNamespace }
+          name = ${JWTSecretName}
+          namespace = ${TNamespace}
         data:
-          id_rsa: ${ JWTPrivateKey }
-          id_rsa.pub: ${ JWTPublicKey }
+          id_rsa: ${JWTPrivateKey}
+          id_rsa.pub: ${JWTPublicKey}
