@@ -38,8 +38,67 @@ Resources:
     Properties:
       ClusterName: !Ref EKSClusterName
       Namespace: kube-system
-      Manifest: |
+      Manifest: !Sub |
         kind: Namespace
         apiVersion: v1
         metadata:
           name: ingress-nginx
+  IngressNginxChart:
+    Type: "AWSQS::Kubernetes::Helm"
+    DependsOn: IngressNginxNamespace
+    Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
+    Properties:
+      ClusterID: !Ref EKSClusterName
+      Name: ingress-nginx
+      Namespace: ingress-nginx
+      Repository: https://kubernetes.github.io/ingress-nginx
+      Chart: ingress-nginx
+      Values:
+        controller.service.loadBalancerIP: !Ref LoadBalancerEIP
+  TDecisionNamespace:
+    Type: "AWSQS::Kubernetes::Resource"
+    Properties:
+      ClusterName: !Ref EKSClusterName
+      Namespace: 'kube-system'
+      Manifest: !Sub |
+        kind: Namespace
+        apiVersion: v1
+        metadata:
+          name: ${TNamespace}
+  RegistryAccessSecret:
+    Type: "AWSQS::Kubernetes::Resource"
+    DependsOn: TDecisionNamespace
+    Properties:
+      ClusterName: !Ref EKSClusterName
+      Namespace: !Ref TNamespace
+      Manifest: !Sub |
+        kind: Secret
+        apiVersion: v1
+        type: kubernetes.io/dockerconfigjson
+        metadata:
+          name = ${RegistrySecretName}
+          namespace = ${TNamespace}
+        data: |
+          {
+            "auths": {
+              "${TMPServer}": {
+                "auth": "base64encode("${TMPUsername}:${TMPPassword}")"
+              }
+            }
+          }
+  JWTSecret:
+    Type: "AWSQS::Kubernetes::Resource"
+    DependsOn: TDecisionNamespace
+    Properties:
+      ClusterName: !Ref EKSClusterName
+      Namespace: !Ref TNamespace
+      Manifest: !Sub |
+        kind: Secret
+        apiVersion: v1
+        type: opaque
+        metadata:
+          name = ${JWTSecretName}
+          namespace = ${TNamespace}
+        data:
+          id_rsa: ${JWTPrivateKey}
+          id_rsa.pub: ${JWTPublicKey}
