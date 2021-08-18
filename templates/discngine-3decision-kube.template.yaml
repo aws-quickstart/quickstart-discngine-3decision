@@ -32,14 +32,8 @@ Parameters:
     Type: String
     NoEcho: true
 Resources:
-  ApplyResourceVersion:
-    Type: AWS::CloudFormation::ResourceVersion
-    Properties:
-      TypeName: AWSQS::Kubernetes::Resource
-      SchemaHandlerPackage: s3://aws-quickstart/quickstart-kubernetes-resource-provider/awsqs_kubernetes_apply.zip
-      ExecutionRoleArn: arn:aws:iam::751149478800:role/eks-quickstart-ControlPlane
   IngressNginxNamespace:
-    Type: "AWSQS::Kubernetes::Resource"
+    Type: "AWSTEST::Kubernetes::Resource"
     DependsOn: ApplyResourceVersion
     Properties:
       ClusterName: !Ref EKSClusterName
