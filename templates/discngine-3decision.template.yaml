@@ -139,9 +139,6 @@ Resources:
       Parameters:
         TNamespace: !Ref TNamespace
         RegistrySecretName: !Ref RegistrySecretName
-        RegistryServer: !Ref RegistryServer
-        RegistryUsername: !Ref RegistryUsername
-        RegistryPassword: !Ref RegistryPassword
         JWTSecretName: !Ref JWTSecretName
         JWTPrivateKey: !Ref JWTPrivateKey
         JWTPublicKey: !Ref JWTPublicKey
