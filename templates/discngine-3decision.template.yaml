@@ -141,7 +141,7 @@ Resources:
           S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
         VPCID: !Ref VPCID
-        EKSClusterName: !Ref EKSClusterName
+        KubeClusterName: !Ref EKSClusterName
         PerRegionSharedResources: !Ref PerRegionSharedResources
         PerAccountSharedResources: !Ref PerAccountSharedResources
         QSS3BucketName: !Ref QSS3BucketName
