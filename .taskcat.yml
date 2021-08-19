@@ -1,7 +1,7 @@
 project:
   name: quickstart-discngine-3decision
   owner: quickstart-eng@amazon.com
-  build_submodules: false
+  build_submodules: true
   regions:
   - eu-central-1
   template: templates/discngine-3decision.template.yaml
@@ -23,4 +23,7 @@ tests:
       EKSClusterName: test
       JWTPrivateKey: LS0
       JWTPublicKey: LS0
+      PerRegionSharedResources: 'No'
+      PerAccountSharedResources: 'No'
+      VPCID: vpc-03d050f00cc9ac9fd
     template: templates/discngine-3decision.template.yaml

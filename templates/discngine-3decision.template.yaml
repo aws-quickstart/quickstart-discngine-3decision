@@ -52,8 +52,6 @@ Metadata:
         default: Sample Param
       EKSClusterName:
         default: Sample Param
-Conditions:
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 Parameters:
   QSS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
@@ -98,11 +96,17 @@ Parameters:
     Default: 3decision-jwt-secret
     Description: ""
     Type: String
+  JWTKeysSecretName:
+    Default: AWS::NoValue
+    Description: "The name of a secret in SecretsManager containing base64 keys in fields id_rsa and id_rsa.pub"
+    Type: String
   JWTPrivateKey:
+    Default: AWS::NoValue
     Description: "An SSH private key in base64 format"
     Type: String
     NoEcho: true
   JWTPublicKey:
+    Default: AWS::NoValue
     Description: "An SSH public key in base64 format"
     Type: String
   EKSClusterName:
@@ -117,8 +121,32 @@ Parameters:
   TMPPassword:
     Type: String
     NoEcho: true
+  PerRegionSharedResources:
+    Type: String
+  PerAccountSharedResources:
+    Type: String
+  VPCID:
+    Type: String
 
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+  UseJWTKeysSecret: !Not [ !Equals [ AWS::NoValue, !Ref JWTKeysSecretName ] ]
 Resources:
+  EKSCluster:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-amazon-eks/templates/amazon-eks-entrypoint-existing-cluster.template.yaml'
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Parameters:
+        VPCID: !Ref VPCID
+        EKSClusterName: !Ref EKSClusterName
+        PerRegionSharedResources: !Ref PerRegionSharedResources
+        PerAccountSharedResources: !Ref PerAccountSharedResources
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketRegion: !Ref QSS3BucketRegion
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
   DNSRecord:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -141,8 +169,8 @@ Resources:
         TNamespace: !Ref TNamespace
         RegistrySecretName: !Ref RegistrySecretName
         JWTSecretName: !Ref JWTSecretName
-        JWTPrivateKey: !Ref JWTPrivateKey
-        JWTPublicKey: !Ref JWTPublicKey
+        JWTPrivateKey: !If [UseJWTKeysSecret, !Sub '{{resolve:secretsmanager:${JWTKeysSecretName}:SecretString:username}}', !Ref JWTPrivateKey]
+        JWTPublicKey: !If [UseJWTKeysSecret, !Sub '{{resolve:secretsmanager:${JWTKeysSecretName}:SecretString:username}}', !Ref JWTPublicKey]
         EKSClusterName: !Ref EKSClusterName
         LoadBalancerEIP: !GetAtt DNSRecord.Outputs.LoadBalancerEIP
         TMPServer: !Ref TMPServer
