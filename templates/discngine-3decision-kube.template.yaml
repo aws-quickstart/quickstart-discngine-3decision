@@ -33,7 +33,7 @@ Parameters:
     NoEcho: true
 Resources:
   IngressNginxNamespace:
-    Type: "AWSTEST::Kubernetes::Resource"
+    Type: "AWSQS::Kubernetes::Resource"
     Properties:
       ClusterName: !Ref EKSClusterName
       Namespace: kube-system
