@@ -159,7 +159,7 @@ Resources:
         HostedZoneName: !Ref HostedZoneName
   3decisionKubeStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn: DNSRecord
+    DependsOn: [ DNSRecord, EKSCluster ]
     Properties:
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-kube.template.yaml'
