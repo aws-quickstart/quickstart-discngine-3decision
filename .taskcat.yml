@@ -1,10 +1,10 @@
 project:
   name: quickstart-discngine-3decision
   owner: quickstart-eng@amazon.com
-  build_submodules: true
+  build_submodules: false
   regions:
   - eu-central-1
-  template: templates/discngine-3decision.template.yaml
+  template: templates/discngine-3decision-main.template.yaml
   s3_regional_buckets: true
   parameters:
     RemoteAccessCIDR: 10.0.0.0/16
@@ -23,7 +23,6 @@ tests:
       EKSClusterName: test
       JWTPrivateKey: LS0
       JWTPublicKey: LS0
-      PerRegionSharedResources: 'No'
-      PerAccountSharedResources: 'No'
       VPCID: vpc-03d050f00cc9ac9fd
-    template: templates/discngine-3decision.template.yaml
+      DBPassword: admin
+    template: templates/discngine-3decision-main.template.yaml

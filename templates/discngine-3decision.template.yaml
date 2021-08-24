@@ -10,49 +10,68 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
+          default: Basic configuration
+        Parameters:
+          - EKSClusterName
+          - VPCID
+      - Label:
+          default : Discngine 3decision database configuration
+        Parameters:
+          - DBName
+          - DBPassword
+      - Label:
+          default: Discngine 3decision dns configuration
+        Parameters:
+          - HostedZoneId
+          - HostedZoneName
+      - Label:
+          default: Discngine 3decision kube configuration
+        Parameters:
+          - TNamespace
+          - JWTSecretName
+          - JWTPrivateKey
+          - JWTPublicKey
+      - Label:
           default: AWS Quick Start configuration
         Parameters:
           - QSS3BucketName
           - QSS3BucketRegion
           - QSS3KeyPrefix
-      - Label:
-          default: "Discngine 3decision dns configuration"
-        Parameters:
-          - HostedZoneId
-          - HostedZoneName
-      - Label:
-          default: "Discngine 3decision kube configuration"
-        Parameters:
-          - TNamespace
-          - RegistrySecretName
-          - JWTSecretName
-          - JWTPrivateKey
-          - JWTPublicKey
-          - EKSClusterName
     ParameterLabels:
+      EKSClusterName:
+        default: Name of EKS Cluster
+      VPCID:
+        default: ID of the VPC
       QSS3BucketName:
         default: Quick Start S3 bucket name
       QSS3BucketRegion:
         default: Quick Start S3 bucket region
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
+      DBName:
+        default: Name of the database
+      DBPassword:
+        default: Password of the database
       HostedZoneId:
-        default: Sample Param
+        default: Route 53 Hosted Zone ID
       HostedZoneName:
-        default: Sample Param
+        default: Route 53 Hosted Zone name
       TNamespace:
-        default: Sample Param
-      RegistrySecretName:
-        default: Sample Param
+        default: 3decision Helm chart namespace
       JWTSecretName:
-        default: Sample Param
+        default: Name of secret used for JWT
       JWTPrivateKey:
-        default: Sample Param
+        default: Private SSH key in base 64 used for JWT
       JWTPublicKey:
-        default: Sample Param
-      EKSClusterName:
-        default: Sample Param
+        default: Public SSH key in base 64 used for JWT
+
 Parameters:
+  EKSClusterName:
+    Description: "Required: The name of the EKS cluster in which the stacks will be deployed"
+    Type: String
+  VPCID:
+    Type: String
+    Description: "Required: The id of the VPC in which the EKS cluster is deployed"
   QSS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
     ConstraintDescription: Quick Start bucket name can include numbers, lowercase
@@ -76,42 +95,67 @@ Parameters:
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
     Type: String
+  DBName:
+    Default: 'db3dec'
+    Description: "Optional: The name given to the RDS Oracle database.
+                  This defaults to db3dec."
+    Type: String
+  DBPassword:
+    NoEcho: true
+    Description: "Required: The database admin account password."
+    Type: String
+    MinLength: '8'
+    MaxLength: '41'
+    AllowedPattern: '[a-zA-Z0-9]*'
+    ConstraintDescription: must contain only alphanumeric characters.
   HostedZoneId:
     Default: AWS::NoValue
-    Description: "The ID of the hosted zone that you want to create records in."
+    Description: "Optional: The ID of the hosted zone that you want to create records in.
+                  If given, HostedZoneName will not be used."
     Type: String
   HostedZoneName:
     Default: AWS::NoValue
-    Description: "The Name of the hosted zone that you want to create records in."
+    Description: "Optional: The Name of the hosted zone that you want to create records in.
+                  If HostedZoneId is given, this will not be used"
     Type: String
   TNamespace:
     Default: tdecision
-    Description: ""
+    Description: "Optional: The name of the kubernetes namespace in which the 3decision helm chart will be deployed.
+                  This will default to tdecision if not given.
+                  The namespace will be created if it doesn't already exists."
     Type: String
+  JWTSecretName:
+    Default: 3decision-jwt-secret
+    Description: "Optional: The name of the kubernetes secret that will contain the ssh key
+                  This will default to 3decision-jwt-secret.
+                  It will be placed in the same namespace as the 3decision helm chart"
+    Type: String
+  JWTKeysSecretName:
+    Default: AWS::NoValue
+    Description: "Optional: The name of a secret in SecretsManager containing base64 keys in fields private_key and public_key
+                  By default, this will have no value, in which case the variables JWTPrivateKey and JWTPublicKey will be used."
+    Type: String
+  JWTPrivateKey:
+    Default: AWS::NoValue
+    Description: "Optional: An SSH private key in base64 format
+                  If JWTKeysSecretName is set, this variable is not used"
+    Type: String
+    NoEcho: true
+    AllowedPattern: ^LS0
+    ConstraintDescription: Must be a base64 key
+  JWTPublicKey:
+    Default: AWS::NoValue
+    Description: "Optional: An SSH public key in base64 format.
+                  If JWTKeysSecretName is set, this variable is not used"
+    Type: String
+    AllowedPattern: ^LS0
+    ConstraintDescription: Must be a base64 key
+  ## TODELETE: THIS SHOULD BE DESTROYED BEFORE SENDING TO PRODUCTION
   RegistrySecretName:
     Default: ociregistry
     Description: ""
     Type: String
-  JWTSecretName:
-    Default: 3decision-jwt-secret
-    Description: ""
-    Type: String
-  JWTKeysSecretName:
-    Default: AWS::NoValue
-    Description: "The name of a secret in SecretsManager containing base64 keys in fields id_rsa and id_rsa.pub"
-    Type: String
-  JWTPrivateKey:
-    Default: AWS::NoValue
-    Description: "An SSH private key in base64 format"
-    Type: String
-    NoEcho: true
-  JWTPublicKey:
-    Default: AWS::NoValue
-    Description: "An SSH public key in base64 format"
-    Type: String
-  EKSClusterName:
-    Description: ""
-    Type: String
+  ## TODELETE: THE THREE TMP VARIABLES SHOULD BE DELETED
   TMPServer:
     Type: String
     Default: fra.ocir.io
@@ -121,32 +165,25 @@ Parameters:
   TMPPassword:
     Type: String
     NoEcho: true
-  PerRegionSharedResources:
-    Type: String
-  PerAccountSharedResources:
-    Type: String
-  VPCID:
-    Type: String
-
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
   UseJWTKeysSecret: !Not [ !Equals [ AWS::NoValue, !Ref JWTKeysSecretName ] ]
 Resources:
-  EKSCluster:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: !Sub
-        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-amazon-eks/templates/amazon-eks-entrypoint-existing-cluster.template.yaml'
-        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
-      Parameters:
-        VPCID: !Ref VPCID
-        KubeClusterName: !Ref EKSClusterName
-        PerRegionSharedResources: !Ref PerRegionSharedResources
-        PerAccountSharedResources: !Ref PerAccountSharedResources
-        QSS3BucketName: !Ref QSS3BucketName
-        QSS3BucketRegion: !Ref QSS3BucketRegion
-        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+#  EKSCluster:
+#    Type: AWS::CloudFormation::Stack
+#    Properties:
+#      TemplateURL: !Sub
+#        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-amazon-eks/templates/amazon-eks-entrypoint-existing-cluster.template.yaml'
+#        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+#          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+#      Parameters:
+#        VPCID: !Ref VPCID
+#        KubeClusterName: !Ref EKSClusterName
+#        PerRegionSharedResources: !Ref PerRegionSharedResources
+#        PerAccountSharedResources: !Ref PerAccountSharedResources
+#        QSS3BucketName: !Ref QSS3BucketName
+#        QSS3BucketRegion: !Ref QSS3BucketRegion
+#        QSS3KeyPrefix: !Ref QSS3KeyPrefix
   DNSRecord:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -159,7 +196,7 @@ Resources:
         HostedZoneName: !Ref HostedZoneName
   3decisionKubeStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn: [ DNSRecord, EKSCluster ]
+    DependsOn: DNSRecord
     Properties:
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-kube.template.yaml'
@@ -169,10 +206,22 @@ Resources:
         TNamespace: !Ref TNamespace
         RegistrySecretName: !Ref RegistrySecretName
         JWTSecretName: !Ref JWTSecretName
-        JWTPrivateKey: !If [UseJWTKeysSecret, !Sub '{{resolve:secretsmanager:${JWTKeysSecretName}:SecretString:username}}', !Ref JWTPrivateKey]
-        JWTPublicKey: !If [UseJWTKeysSecret, !Sub '{{resolve:secretsmanager:${JWTKeysSecretName}:SecretString:username}}', !Ref JWTPublicKey]
+        JWTPrivateKey: !If [UseJWTKeysSecret, !Sub '{{resolve:secretsmanager:${JWTKeysSecretName}:SecretString:private_key}}', !Ref JWTPrivateKey]
+        JWTPublicKey: !If [UseJWTKeysSecret, !Sub '{{resolve:secretsmanager:${JWTKeysSecretName}:SecretString:public_key}}', !Ref JWTPublicKey]
         EKSClusterName: !Ref EKSClusterName
         LoadBalancerEIP: !GetAtt DNSRecord.Outputs.LoadBalancerEIP
         TMPServer: !Ref TMPServer
         TMPUsername: !Ref TMPUsername
         TMPPassword: !Ref TMPPassword
+  RDSStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-oracle.template.yaml'
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Parameters:
+        DBInstanceClass: db.t3.micro
+        DBName: !Ref DBName
+        DBPassword: !Ref DBPassword
+        VPCID: !Ref VPCID
