@@ -141,15 +141,11 @@ Parameters:
                   If JWTKeysSecretName is set, this variable is not used"
     Type: String
     NoEcho: true
-    AllowedPattern: ^LS0
-    ConstraintDescription: Must be a base64 key
   JWTPublicKey:
     Default: AWS::NoValue
     Description: "Optional: An SSH public key in base64 format.
                   If JWTKeysSecretName is set, this variable is not used"
     Type: String
-    AllowedPattern: ^LS0
-    ConstraintDescription: Must be a base64 key
   ## TODELETE: THIS SHOULD BE DESTROYED BEFORE SENDING TO PRODUCTION
   RegistrySecretName:
     Default: ociregistry
