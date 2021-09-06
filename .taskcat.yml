@@ -24,6 +24,6 @@ tests:
       JWTPublicKey: LS0
       VPCID: vpc-03d050f00cc9ac9fd
       DBPassword: admindisc
-      PerAccountSharedResources: 'No'
-      PerRegionSharedResources: 'No'
+      # PerAccountSharedResources: 'No'
+      # PerRegionSharedResources: 'No'
     template: templates/discngine-3decision-main.template.yaml
