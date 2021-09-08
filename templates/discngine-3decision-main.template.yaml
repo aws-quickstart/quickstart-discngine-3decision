@@ -382,7 +382,7 @@ Resources:
         ClusterAutoScaler: 'Enabled'
         EKSPublicAccessEndpoint: 'Enabled'
         ## TODELETE: THIS SHOULD BE DESTROYED BEFORE SENDING TO PRODUCTION
-        AdditionalEKSAdminRoleArn: 'arn:aws:iam::751149478800:role/aws-reserved/sso.amazonaws.com/eu-central-1/AWSReservedSSO_PowerUserPassRole_43aa7714fe785dcf'
+        AdditionalEKSAdminRoleArn: 'arn:aws:iam::751149478800:role/AWSReservedSSO_PowerUserPassRole_43aa7714fe785dcf'
 #  3decisionStack:
 #    Type: AWS::CloudFormation::Stack
 #    Properties:
