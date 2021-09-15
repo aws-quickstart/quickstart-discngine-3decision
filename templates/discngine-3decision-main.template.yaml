@@ -30,6 +30,8 @@ Metadata:
       - Label:
           default: Amazon EKS configuration
         Parameters:
+          - ConfigSetName
+          - NodeVolumeSize
           - WorkloadNamespace
           - NodeInstanceType
           - LoadBalancerType
@@ -96,6 +98,10 @@ Metadata:
         default: Node instance type
       NumberOfNodes:
         default: Number of nodes
+      ConfigSetName:
+        default: Config set name
+      NodeVolumeSize:
+        default: Size of worker nodes volumes
       WorkloadNamespace:
         default: Kubernetes namespace
       DBName:
@@ -258,6 +264,16 @@ Parameters:
       - ALB
       - NLB
     Description: EKS Service Load Balancer Type.
+  ConfigSetName:
+    Type: String
+    Default: "dng-3decision"
+    Description: (Optional) Name used to map advanced parameters to an EKS cluster.
+                  Change to blank to create eks default parameters.
+  NodeVolumeSize:
+    Type: String
+    Default: 100
+    Description: (Optional) Size of EBS volumes attached to worker nodes.
+                  Increase this size if your pods are getting evicted with a disk pressure annotation.                
   WorkloadNamespace:
     Default: "discngine-3decision"
     Type: String
@@ -273,7 +289,7 @@ Parameters:
     Default: 'AutoDetect'
     Description: Choose "No" if you already deployed another EKS Quick Start stack in your Region.
   NumberOfNodes:
-    Default: 1
+    Default: 2
     Description: The number of Amazon EKS node instances. The default is one for each of the three Availability Zones.
     Type: Number
   DBPassword:
@@ -328,6 +344,21 @@ Parameters:
     NoEcho: true
 
 Resources:
+  AdvancedConfigDefaultsStack:
+    Type: AWS::CloudFormation::Stack
+    Condition: CreateAdvancedConfigWithDefaults
+    Metadata: { cfn-lint: { config: { ignore_checks: [E9902, W9901] } } }
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/amazon-eks-advanced-configuration.template.yaml'
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Parameters:
+        ConfigSetName: !Ref ConfigSetName
+        ConsulUIAccessCIDR: !Ref RemoteAccessCIDR
+        VaultUIAccessCIDR: !Ref RemoteAccessCIDR
+        NodeVolumeSize: !Ref NodeVolumeSize
+        KubernetesVersion: !Ref 'AWS::NoValue'
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -373,6 +404,7 @@ Resources:
         PrivateSubnet2ID: !GetAtt VPCStack.Outputs.PrivateSubnet2AID
         PrivateSubnet3ID: !GetAtt VPCStack.Outputs.PrivateSubnet3AID
         NumberOfNodes: !Ref NumberOfNodes
+        ConfigSetName: !Ref ConfigSetName
         NodeInstanceType: !Ref NodeInstanceType
         RemoteAccessCIDR: !Ref RemoteAccessCIDR
         VPCID: !GetAtt VPCStack.Outputs.VPCID

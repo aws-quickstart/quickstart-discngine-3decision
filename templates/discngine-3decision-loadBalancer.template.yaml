@@ -1,0 +1,15 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: "This template deploys a LoadBalancer (qs-1s40771km)."
+Metadata:
+  QuickStartDocumentation:
+    EntrypointName: "LoadBalancer Creation"
+  LintSpellExclude:
+    - Discngine
+    - 3decision
+
+Resources:
+  ElasticLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Subnets: [ "subnet-015d31b7fb4a2aeea", "subnet-0252244704e14c9d3", "subnet-0bb19f00839a04dc9" ]
