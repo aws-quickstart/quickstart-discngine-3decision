@@ -342,7 +342,8 @@ Parameters:
   TMPPassword:
     Type: String
     NoEcho: true
-
+Conditions:
+  CreateAdvancedConfigWithDefaults: !Not [!Ref ConfigSetName, '']
 Resources:
   AdvancedConfigDefaultsStack:
     Type: AWS::CloudFormation::Stack
