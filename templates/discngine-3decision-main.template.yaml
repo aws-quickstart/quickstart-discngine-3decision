@@ -341,7 +341,8 @@ Parameters:
     Type: String
     NoEcho: true
 Conditions:
-  CreateAdvancedConfigWithDefaults: !Not [!Ref ConfigSetName, '']
+  ConfiSetNameSet: !Equals [!Ref ConfigSetName, '']
+  CreateAdvancedConfigWithDefaults: !Not [Condition: ConfiSetNameSet]
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 Resources:
   AdvancedConfigDefaultsStack:
