@@ -121,8 +121,6 @@ Metadata:
       JWTPublicKey:
         default: Public SSH key in base 64 used for JWT
 
-Conditions:
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 Parameters:
   KeyPairName:
     Description: A public/private key pair, which allows you to connect securely to your instance after it launches.
@@ -344,6 +342,7 @@ Parameters:
     NoEcho: true
 Conditions:
   CreateAdvancedConfigWithDefaults: !Not [!Ref ConfigSetName, '']
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 Resources:
   AdvancedConfigDefaultsStack:
     Type: AWS::CloudFormation::Stack
