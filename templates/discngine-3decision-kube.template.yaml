@@ -7,7 +7,6 @@ Metadata:
   LintSpellExclude:
     - Discngine
     - 3decision
-
 Parameters:
   TNamespace:
     Type: String
@@ -22,8 +21,8 @@ Parameters:
     Type: String
   EKSClusterName:
     Type: String
-  LoadBalancerEIP:
-    Type: String
+#  LoadBalancerEIP:
+#    Type: String
   TMPServer:
     Type: String
   TMPUsername:
@@ -32,9 +31,24 @@ Parameters:
     Type: String
     NoEcho: true
 Resources:
+  LoadBalancerEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Tags:
+        - Key: Name
+          Value: LoadBalancerEIP
+  TDecisionNamespace:
+    Type: "AWSQS::Kubernetes::Resource"
+    Properties:
+      ClusterName: !Ref EKSClusterName
+      Namespace: 'kube-system'
+      Manifest: !Sub |
+        kind: Namespace
+        apiVersion: v1
+        metadata:
+          name: ${TNamespace}
   IngressNginxChart:
     Type: "AWSQS::Kubernetes::Helm"
-    DependsOn: IngressNginxNamespace
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
     Properties:
       ClusterID: !Ref EKSClusterName
@@ -43,7 +57,7 @@ Resources:
       Repository: https://kubernetes.github.io/ingress-nginx
       Chart: ingress-nginx
       Values:
-        controller.service.loadBalancerIP: !Ref LoadBalancerEIP
+        controller.service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-eip-allocations: !GetAtt LoadBalancerEIP.AllocationId
   CertManagerChart:
     Type: "AWSQS::Kubernetes::Helm"
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
@@ -56,7 +70,7 @@ Resources:
       Version: 1.4.0
       Values:
         installCRDs: true
-  CertManagerChart:
+  RabbitMQChart:
     Type: "AWSQS::Kubernetes::Helm"
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
     Properties:
@@ -65,17 +79,11 @@ Resources:
       Namespace: rabbitmq
       Repository: https://charts.bitnami.com/bitnami
       Chart: rabbitmq
-      Version: 8.20.2
-  TDecisionNamespace:
-    Type: "AWSQS::Kubernetes::Resource"
-    Properties:
-      ClusterName: !Ref EKSClusterName
-      Namespace: 'kube-system'
-      Manifest: !Sub |
-        kind: Namespace
-        apiVersion: v1
-        metadata:
-          name: ${TNamespace}
+      Version: 6.27.1
+      Values:
+        image.tag: 3.8.19-debian-10-r30
+        rabbitmq.username: discngine
+        rabbitmq.password: lapin79
   RegistryAccessSecret:
     Type: "AWSQS::Kubernetes::Resource"
     DependsOn: TDecisionNamespace
@@ -87,16 +95,10 @@ Resources:
         apiVersion: v1
         type: kubernetes.io/dockerconfigjson
         metadata:
-          name = ${RegistrySecretName}
-          namespace = ${TNamespace}
-        data: |
-          {
-            "auths": {
-              "${TMPServer}": {
-                "auth": "base64encode("${TMPUsername}:${TMPPassword}")"
-              }
-            }
-          }
+          name: ${RegistrySecretName}
+          namespace: ${TNamespace}
+        data:
+          .dockerconfigjson: ew0KICAiYXV0aHMiOiB7DQogICAgImZyYS5vY2lyLmlvIjogew0KICAgICAgImF1dGgiOiAiWkdselkyNW5hVzVsTVM5cFpHTnpYMlpsWkdWeVlYUnBiMjR2YW05dVlYUm9ZVzR1YldGdVlYTnpaVzVBWkdselkyNW5hVzVsTG1OdmJUcDFXRFVqWTFKbmRVSTRURlpIWWs4eFozUXROZz09Ig0KICAgIH0NCiAgfQ0KfQ0K
   JWTSecret:
     Type: "AWSQS::Kubernetes::Resource"
     DependsOn: TDecisionNamespace
@@ -108,18 +110,20 @@ Resources:
         apiVersion: v1
         type: opaque
         metadata:
-          name = ${JWTSecretName}
-          namespace = ${TNamespace}
+          name: ${JWTSecretName}
+          namespace: ${TNamespace}
         data:
           id_rsa: ${JWTPrivateKey}
           id_rsa.pub: ${JWTPublicKey}
 #  TdecisionChart:
 #    Type: "AWSQS::Kubernetes::Helm"
+#    DependsOn: [ JWTSecret, RegistryAccessSecret, IngressNginxChart, CertManagerChart ]
 #    Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
 #    Properties:
 #      ClusterID: !Ref EKSClusterName
 #      Name: tdecision
 #      Namespace: !Ref TNamespace
-#     Repository: 
-#    Chart: 3decision
-#   Version: 8.20.2
+#      Chart: oci://fra.ocir.io/discngine1/3decision_kube/3decision:v21.09.09
+#      RepositoryOptions:
+#        Username: !Ref TMPUsername
+#        Password: !Ref TMPPassword
