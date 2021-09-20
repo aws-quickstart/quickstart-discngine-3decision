@@ -115,15 +115,17 @@ Resources:
         data:
           id_rsa: ${JWTPrivateKey}
           id_rsa.pub: ${JWTPublicKey}
-#  TdecisionChart:
-#    Type: "AWSQS::Kubernetes::Helm"
-#    DependsOn: [ JWTSecret, RegistryAccessSecret, IngressNginxChart, CertManagerChart ]
-#    Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
-#    Properties:
-#      ClusterID: !Ref EKSClusterName
-#      Name: tdecision
-#      Namespace: !Ref TNamespace
-#      Chart: oci://fra.ocir.io/discngine1/3decision_kube/3decision:v21.09.09
-#      RepositoryOptions:
-#        Username: !Ref TMPUsername
-#        Password: !Ref TMPPassword
+  TdecisionChart:
+    Type: "AWSQS::Kubernetes::Helm"
+    DependsOn: [ JWTSecret, RegistryAccessSecret, IngressNginxChart, CertManagerChart ]
+    Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
+    Properties:
+      ClusterID: !Ref EKSClusterName
+      Name: tdecision
+      Namespace: !Ref TNamespace
+      Chart: oci://fra.ocir.io/discngine1/3decision_kube/3decision:v21.09.09
+      RepositoryOptions:
+        Username: !Ref TMPUsername
+        Password: !Ref TMPPassword
+      Values:
+        volumes.storageClassName: gp2
