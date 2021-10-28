@@ -10,8 +10,6 @@ Metadata:
 Parameters:
   TNamespace:
     Type: String
-  RegistrySecretName:
-    Type: String
   JWTSecretName:
     Type: String
   JWTPrivateKey:
@@ -21,8 +19,15 @@ Parameters:
     Type: String
   EKSClusterName:
     Type: String
-#  LoadBalancerEIP:
-#    Type: String
+  DBPassword:
+    Type: String
+  DBConnectionString:
+    Type: String
+  CollectionVolumeID:
+    Type: String
+  Data3DecVolumeID:
+    Type: String
+##TO DELETE
   TMPServer:
     Type: String
   TMPUsername:
@@ -31,12 +36,6 @@ Parameters:
     Type: String
     NoEcho: true
 Resources:
-  LoadBalancerEIP:
-    Type: AWS::EC2::EIP
-    Properties:
-      Tags:
-        - Key: Name
-          Value: LoadBalancerEIP
   TDecisionNamespace:
     Type: "AWSQS::Kubernetes::Resource"
     Properties:
@@ -47,29 +46,6 @@ Resources:
         apiVersion: v1
         metadata:
           name: ${TNamespace}
-  IngressNginxChart:
-    Type: "AWSQS::Kubernetes::Helm"
-    Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
-    Properties:
-      ClusterID: !Ref EKSClusterName
-      Name: ingress-nginx
-      Namespace: ingress-nginx
-      Repository: https://kubernetes.github.io/ingress-nginx
-      Chart: ingress-nginx
-      Values:
-        controller.service.annotations.service\.beta\.kubernetes\.io/aws-load-balancer-eip-allocations: !GetAtt LoadBalancerEIP.AllocationId
-  CertManagerChart:
-    Type: "AWSQS::Kubernetes::Helm"
-    Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
-    Properties:
-      ClusterID: !Ref EKSClusterName
-      Name: cert-manager
-      Namespace: cert-manager
-      Repository: https://charts.jetstack.io
-      Chart: cert-manager
-      Version: 1.4.0
-      Values:
-        installCRDs: true
   RabbitMQChart:
     Type: "AWSQS::Kubernetes::Helm"
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
@@ -95,7 +71,7 @@ Resources:
         apiVersion: v1
         type: kubernetes.io/dockerconfigjson
         metadata:
-          name: ${RegistrySecretName}
+          name: ociregistry
           namespace: ${TNamespace}
         data:
           .dockerconfigjson: ew0KICAiYXV0aHMiOiB7DQogICAgImZyYS5vY2lyLmlvIjogew0KICAgICAgImF1dGgiOiAiWkdselkyNW5hVzVsTVM5cFpHTnpYMlpsWkdWeVlYUnBiMjR2YW05dVlYUm9ZVzR1YldGdVlYTnpaVzVBWkdselkyNW5hVzVsTG1OdmJUcDFXRFVqWTFKbmRVSTRURlpIWWs4eFozUXROZz09Ig0KICAgIH0NCiAgfQ0KfQ0K
@@ -117,15 +93,19 @@ Resources:
           id_rsa.pub: ${JWTPublicKey}
   TdecisionChart:
     Type: "AWSQS::Kubernetes::Helm"
-    DependsOn: [ JWTSecret, RegistryAccessSecret, IngressNginxChart, CertManagerChart ]
+    DependsOn: [ JWTSecret, RegistryAccessSecret, CertManagerChart ]
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
     Properties:
       ClusterID: !Ref EKSClusterName
       Name: tdecision
       Namespace: !Ref TNamespace
-      Chart: oci://fra.ocir.io/discngine1/3decision_kube/3decision:v21.09.09
+      Chart: oci://751149478800.dkr.ecr.eu-central-1.amazonaws.com/3decision-private:latest
       RepositoryOptions:
         Username: !Ref TMPUsername
         Password: !Ref TMPPassword
       Values:
-        volumes.storageClassName: gp2
+        nodeCloud.volumes.jwtSecret.name: !Ref JWTSecretName
+        oracle.password: !Ref DBPassword
+        oracle.connectionString: !Ref DBConnectionString
+        pipelinePilot.volumes.data3dec.awsElasticBlockStore.volumeID: !Ref Data3DecVolumeID
+        pipelinePilot.volumes.collection.awsElasticBlockStore.volumeID: !Ref CollectionVolumeID

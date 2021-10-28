@@ -17,12 +17,13 @@ tests:
       - eu-central-1
     parameters:
       AvailabilityZones: $[taskcat_genaz_3]
-      KeyPairName: quickstart-3dec
+      EKSClusterName: EKS-FQB6S2A0
+      VPCID: vpc-0dde054ec72f963bf
+      DBPassword: z94_MLvb_10_8
+      DBSubnets: subnet-00243452b0baee610,subnet-07ee05732d16e138b,subnet-05f3d92923dd7f580
       TMPPassword: uX5#cRguB8LVGbO1gt-6
-      EKSClusterName: test
+      KeyPairName: quickstart-3dec
       JWTPrivateKey: LS0
       JWTPublicKey: LS0
-      VPCID: vpc-03d050f00cc9ac9fd
-      DBPassword: admindisc
       NodeInstanceType: t3.medium
     template: templates/discngine-3decision-main.template.yaml

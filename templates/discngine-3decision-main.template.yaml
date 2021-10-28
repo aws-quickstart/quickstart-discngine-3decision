@@ -42,11 +42,6 @@ Metadata:
           - DBName
           - DBPassword
       - Label:
-          default: Discngine 3decision dns configuration
-        Parameters:
-          - HostedZoneId
-          - HostedZoneName
-      - Label:
           default: Discngine 3decision kube configuration
         Parameters:
           - TNamespace
@@ -108,10 +103,6 @@ Metadata:
         default: Name of the database
       DBPassword:
         default: Password of the database
-      HostedZoneId:
-        default: Route 53 Hosted Zone ID
-      HostedZoneName:
-        default: Route 53 Hosted Zone name
       TNamespace:
         default: 3decision Helm chart namespace
       JWTSecretName:
@@ -298,16 +289,6 @@ Parameters:
     MaxLength: '41'
     AllowedPattern: '[a-zA-Z0-9]*'
     ConstraintDescription: must contain only alphanumeric characters.
-  HostedZoneId:
-    Default: AWS::NoValue
-    Description: "Optional: The ID of the hosted zone that you want to create records in.
-                  If given, HostedZoneName will not be used."
-    Type: String
-  HostedZoneName:
-    Default: AWS::NoValue
-    Description: "Optional: The Name of the hosted zone that you want to create records in.
-                  If HostedZoneId is given, this will not be used"
-    Type: String
   TNamespace:
     Default: tdecision
     Description: "Optional: The name of the kubernetes namespace in which the 3decision helm chart will be deployed.
@@ -416,22 +397,24 @@ Resources:
         EKSPublicAccessEndpoint: 'Enabled'
         ## TODELETE: THIS SHOULD BE DESTROYED BEFORE SENDING TO PRODUCTION
         AdditionalEKSAdminRoleArn: 'arn:aws:iam::751149478800:role/AWSReservedSSO_PowerUserPassRole_43aa7714fe785dcf'
-#  3decisionStack:
-#    Type: AWS::CloudFormation::Stack
-#    Properties:
-#      TemplateURL: !Sub
-#        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision.template.yaml'
-#        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-#          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
-#      Parameters:
-#        VPCID: !GetAtt VPCStack.Outputs.VPCID
-#        EKSClusterName: !GetAtt EKSStack.Outputs.EKSClusterName
-#        DBName: !Ref DBName
-#        DBPassword: !Ref DBPassword
-#        HostedZoneId: !Ref HostedZoneId
-#        HostedZoneName: !Ref HostedZoneName
-#        TNamespace: !Ref TNamespace
-#        JWTSecretName: !Ref JWTSecretName
-#        JWTPrivateKey: !Ref JWTPrivateKey
-#        JWTPublicKey: !Ref JWTPublicKey
-#        TMPPassword: !Ref TMPPassword
+  3decisionStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision.template.yaml'
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Parameters:
+        VPCID: !GetAtt VPCStack.Outputs.VPCID
+        EKSClusterName: !GetAtt EKSStack.Outputs.EKSClusterName
+        DBName: !Ref DBName
+        DBPassword: !Ref DBPassword
+        DBSubnets:
+        - VPCStack.Outputs.PrivateSubnet1AID
+        - VPCStack.Outputs.PrivateSubnet2AID
+        - VPCStack.Outputs.PrivateSubnet3AID
+        TNamespace: !Ref TNamespace
+        JWTSecretName: !Ref JWTSecretName
+        JWTPrivateKey: !Ref JWTPrivateKey
+        JWTPublicKey: !Ref JWTPublicKey
+        TMPPassword: !Ref TMPPassword
