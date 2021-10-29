@@ -14,11 +14,15 @@ Metadata:
         Parameters:
           - EKSClusterName
           - VPCID
+          - ConfigureEKS
       - Label:
           default : Discngine 3decision database configuration
         Parameters:
+          - DBInstanceIdentifier
           - DBName
           - DBPassword
+          - DBSubnets
+          - DBInstanceClass
       - Label:
           default: Discngine 3decision kube configuration
         Parameters:
@@ -26,6 +30,7 @@ Metadata:
           - JWTSecretName
           - JWTPrivateKey
           - JWTPublicKey
+          - PipelinePassword
       - Label:
           default: AWS Quick Start configuration
         Parameters:
@@ -43,10 +48,16 @@ Metadata:
         default: Quick Start S3 bucket region
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
+      DBInstanceIdentifier:
+        default: Identifier of the database
       DBName:
         default: Name of the database
       DBPassword:
         default: Password of the database
+      DBSubnets:
+        default: Subnets in the db subnet group
+      DBInstanceClass:
+        default: Instance type of the database
       TNamespace:
         default: 3decision Helm chart namespace
       JWTSecretName:
@@ -55,6 +66,10 @@ Metadata:
         default: Private SSH key in base 64 used for JWT
       JWTPublicKey:
         default: Public SSH key in base 64 used for JWT
+      PipelinePassword:
+        default: Password used for pipeline pilot
+      ConfigureEKS:
+        default: Boolean determining whether to configure EKS
 
 Parameters:
   EKSClusterName:
@@ -111,7 +126,9 @@ Parameters:
     MinLength: '8'
     MaxLength: '41'
   DBSubnets:
-    Description: 'Required: Subnets to use for the creation of the db subnet group'
+    Description: 'Required: Subnets to use for the creation of the db subnet group.
+                  Input your private subnets if you do not want your db to be publicly accessible.
+                  Input public subnets if the EKS cluster is not inside the same VPC as these subnets.'
     Type: CommaDelimitedList
   DBInstanceClass:
     AllowedValues:
@@ -153,6 +170,15 @@ Parameters:
     Description: "Optional: An SSH public key in base64 format.
                   If JWTKeysSecretName is set, this variable is not used"
     Type: String
+  PipelinePassword:
+    Default: "Required: The password that will allow you to access the pipeline admin platform"
+    Type: String
+    NoEcho: true
+  ConfigureEKS:
+    Description: "Optionnal: Set to true to create EKS quickstart specific resources for your EKS cluster"
+    Default: 'false'
+    Type: String
+    AllowedValues: ['true', 'false']
   ## TODELETE: THE THREE TMP VARIABLES SHOULD BE DELETED
   TMPServer:
     Type: String
@@ -166,49 +192,47 @@ Parameters:
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
   UseJWTKeysSecret: !Not [ !Equals [ AWS::NoValue, !Ref JWTKeysSecretName ] ]
+  ConfigureEKS: !Equals ['true', !Ref ConfigureEKS]
+
 Resources:
-#  EKSCluster:
-#    Type: AWS::CloudFormation::Stack
-#    Properties:
-#      TemplateURL: !Sub
-#        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-amazon-eks/templates/amazon-eks-entrypoint-existing-cluster.template.yaml'
-#        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-#          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
-#      Parameters:
-#        VPCID: !Ref VPCID
-#        KubeClusterName: !Ref EKSClusterName
-#        PerRegionSharedResources: !Ref PerRegionSharedResources
-#        PerAccountSharedResources: !Ref PerAccountSharedResources
-#        QSS3BucketName: !Ref QSS3BucketName
-#        QSS3BucketRegion: !Ref QSS3BucketRegion
-#        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+  EKSCluster:
+    Type: AWS::CloudFormation::Stack
+    Condition: ConfigureEKS
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-amazon-eks/templates/amazon-eks-entrypoint-existing-cluster.template.yaml'
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Parameters:
+        VPCID: !Ref VPCID
+        KubeClusterName: !Ref EKSClusterName
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketRegion: !Ref QSS3BucketRegion
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
   EBSStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - 'https://tcat-5322b09c562b51469448bcd5bd3e05d8-eu-central-1.s3.eu-central-1.amazonaws.com/quickstart-discngine-3decision/templates/discngine-3decision-ebs.template.yaml'
-#        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-ebs.template.yaml'
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-ebs.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
           S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
   RDSStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - 'https://tcat-5322b09c562b51469448bcd5bd3e05d8-eu-central-1.s3.eu-central-1.amazonaws.com/quickstart-discngine-3decision/templates/discngine-3decision-oracle.template.yaml'
-#        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-oracle.template.yaml'
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-oracle.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
           S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
-        DBInstanceClass: db.t3.micro
         DBName: !Ref DBName
         DBSubnets: !Join [ ",", !Ref DBSubnets ]
         DBInstanceClass: !Ref DBInstanceClass
+        VpcId: !Ref VPCID
   3decisionKubeStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - 'https://tcat-5322b09c562b51469448bcd5bd3e05d8-eu-central-1.s3.eu-central-1.amazonaws.com/quickstart-discngine-3decision/templates/discngine-3decision-kube.template.yaml'
-#        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-kube.template.yaml'
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-kube.template.yaml'
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
           S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
@@ -217,10 +241,11 @@ Resources:
         JWTPrivateKey: !If [UseJWTKeysSecret, !Sub '{{resolve:secretsmanager:${JWTKeysSecretName}:SecretString:private_key}}', !Ref JWTPrivateKey]
         JWTPublicKey: !If [UseJWTKeysSecret, !Sub '{{resolve:secretsmanager:${JWTKeysSecretName}:SecretString:public_key}}', !Ref JWTPublicKey]
         EKSClusterName: !Ref EKSClusterName
-        Data3decVolumeID: !GetAtt EBSStack.Outputs.DataVolumeID
+        Data3DecVolumeID: !GetAtt EBSStack.Outputs.DataVolumeID
         CollectionVolumeID: !GetAtt EBSStack.Outputs.CollectionVolumeID
         DBConnectionString: !GetAtt RDSStack.Outputs.PrimaryConnectionString
         DBPassword: !Ref DBPassword
+        PipelinePassword: !Ref PipelinePassword
         TMPServer: !Ref TMPServer
         TMPUsername: !Ref TMPUsername
         TMPPassword: !Ref TMPPassword
