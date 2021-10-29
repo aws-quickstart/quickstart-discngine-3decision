@@ -27,6 +27,9 @@ Parameters:
     Type: String
   Data3DecVolumeID:
     Type: String
+  PipelinePassword:
+    Type: String
+    NoEcho: true
 ##TO DELETE
   TMPServer:
     Type: String
@@ -91,9 +94,40 @@ Resources:
         data:
           id_rsa: ${JWTPrivateKey}
           id_rsa.pub: ${JWTPublicKey}
+  ChangeDBPass:
+    Type: "AWSQS::Kubernetes::Resource"
+    Properties:
+      ClusterName: !Ref EKSClusterName
+      Namespace: !Ref TNamespace
+      Manifest: !Sub |
+        kind: Pod
+        apiVersion: v1
+        metadata:
+          name: db-pass-change
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: db-pass-change
+            image: fra.ocir.io/discngine1/3decision_kube/sqlcl
+            command: ["/bin/bash", "-c"]
+            args:
+            - echo -ne '
+              alter user ADMIN identified by "${DBPassword}";
+              alter user PD_T1_DNG_THREEDECISION identified by "${DBPassword}";
+              alter user PD_T1_DNG_CORE identified by "${DBPassword}";
+              alter user CHEMBL_23 identified by "${DBPassword}";' > changepwd.sql;
+              /root/sqlcl/bin/sql admin/Ch4ng3m3f0rs3cur3p4ss@${DBConnectionString} @changepwd.sql
+            resources:
+              limits:
+                cpu: 500m
+                memory: 500Mi
+              requests:
+                cpu: 150m
+                memory: 250Mi
+
   TdecisionChart:
     Type: "AWSQS::Kubernetes::Helm"
-    DependsOn: [ JWTSecret, RegistryAccessSecret, CertManagerChart ]
+    DependsOn: [ JWTSecret, RegistryAccessSecret ]
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
     Properties:
       ClusterID: !Ref EKSClusterName
@@ -109,3 +143,4 @@ Resources:
         oracle.connectionString: !Ref DBConnectionString
         pipelinePilot.volumes.data3dec.awsElasticBlockStore.volumeID: !Ref Data3DecVolumeID
         pipelinePilot.volumes.collection.awsElasticBlockStore.volumeID: !Ref CollectionVolumeID
+        pipelinePilot.password: !Ref PipelinePassword

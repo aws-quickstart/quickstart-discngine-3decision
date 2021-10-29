@@ -53,6 +53,9 @@ Parameters:
     Description: 'Required: Subnets to use for the creation of the db subnet group
                   Defaults to the private subnets created in the VPC'
     Type: CommaDelimitedList
+  VpcId:
+    Description: 'Required: Id of the VPC'
+    Type: String
 Mappings:
   OracleDetailsMap:
     Standard-Edition-Two-19.0-License-Included:
@@ -60,6 +63,7 @@ Mappings:
       Engine: oracle-se2-cdb
       Family: oracle-se2-cdb-19
       License: license-included
+      Option: default:oracle-se2-cdb-19
 
 Resources:
   EncryptionKey:
@@ -117,6 +121,16 @@ Resources:
     Properties:
       DBSubnetGroupDescription: 'private subnets group'
       SubnetIds: !Ref DBSubnets
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Opens incoming requests on Oracle RDS port 1521"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        IpProtocol: TCP
+        FromPort: 1521
+        ToPort: 1521
   PrimaryDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
@@ -130,13 +144,14 @@ Resources:
       Engine: !FindInMap [OracleDetailsMap, !Ref ORAVersion, Engine]
       EngineVersion: !FindInMap [OracleDetailsMap, !Ref ORAVersion, Version]
       LicenseModel: !FindInMap [OracleDetailsMap, !Ref ORAVersion, License]
-      DBSnapshotIdentifier: 'arn:aws:rds:eu-central-1:751149478800:snapshot:snapshotpostimpv1'
+      OptionGroupName: !FindInMap [OracleDetailsMap, !Ref ORAVersion, Option]
       MultiAZ: !Ref DBMultiZone
       StorageEncrypted: true
-      StorageType: gp2
       KmsKeyId: !GetAtt EncryptionKey.Arn
       DBSubnetGroupName: !Ref SubnetGroup
-      OptionGroupName: 'default:oracle-se2-cdb-19'
+      VPCSecurityGroups: [ !GetAtt DBSecurityGroup.GroupId ]
+      StorageType: gp2
+      DBSnapshotIdentifier: 'arn:aws:rds:eu-central-1:751149478800:snapshot:snapdng3decpd01'
   DBParamGroup:
     Type: AWS::RDS::DBParameterGroup
     Properties:
@@ -163,5 +178,5 @@ Outputs:
         - !GetAtt
           - PrimaryDBInstance
           - Endpoint.Port
-        - ':'
+        - '/'
         - !Ref DBName
