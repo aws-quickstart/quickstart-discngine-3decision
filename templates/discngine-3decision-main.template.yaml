@@ -39,8 +39,11 @@ Metadata:
       - Label:
           default : Discngine 3decision database configuration
         Parameters:
+          - DBInstanceIdentifier
           - DBName
           - DBPassword
+          - DBSubnets
+          - DBInstanceClass
       - Label:
           default: Discngine 3decision kube configuration
         Parameters:
@@ -48,6 +51,7 @@ Metadata:
           - JWTSecretName
           - JWTPrivateKey
           - JWTPublicKey
+          - PipelinePassword
       - Label:
           default: AWS Quick Start configuration
         Parameters:
@@ -99,10 +103,16 @@ Metadata:
         default: Size of worker nodes volumes
       WorkloadNamespace:
         default: Kubernetes namespace
+      DBInstanceIdentifier:
+        default: Identifier of the database
       DBName:
         default: Name of the database
       DBPassword:
         default: Password of the database
+      DBSubnets:
+        default: Subnets in the db subnet group
+      DBInstanceClass:
+        default: Instance type of the database
       TNamespace:
         default: 3decision Helm chart namespace
       JWTSecretName:
@@ -111,6 +121,8 @@ Metadata:
         default: Private SSH key in base 64 used for JWT
       JWTPublicKey:
         default: Public SSH key in base 64 used for JWT
+      PipelinePassword:
+        default: Password used for pipeline pilot
 
 Parameters:
   KeyPairName:
@@ -281,14 +293,47 @@ Parameters:
     Default: 2
     Description: The number of Amazon EKS node instances. The default is one for each of the three Availability Zones.
     Type: Number
+  DBInstanceIdentifier:
+    Default: db3dec
+    Description: "Optional: The database instance name.
+                  This defaults to db3dec."
+    Type: String
+    MinLength: '1'
+    MaxLength: '8'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  DBName:
+    Default: ORCL
+    Description: "Optional: The name given to the RDS Oracle database.
+                  This defaults to ORCL."
+    Type: String
+    MinLength: '1'
+    MaxLength: '8'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
   DBPassword:
     NoEcho: true
     Description: "Required: The database admin account password."
     Type: String
     MinLength: '8'
     MaxLength: '41'
-    AllowedPattern: '[a-zA-Z0-9]*'
-    ConstraintDescription: must contain only alphanumeric characters.
+  DBSubnets:
+    Description: 'Required: Subnets to use for the creation of the db subnet group.
+                  Input your private subnets if you do not want your db to be publicly accessible.
+                  Input public subnets if the EKS cluster is not inside the same VPC as these subnets.'
+    Type: CommaDelimitedList
+  DBInstanceClass:
+    AllowedValues:
+      - db.t3.micro
+      - db.t3.small
+      - db.t3.medium
+      - db.m5.large
+      - db.m5.xlarge
+      - db.m5.2xlarge
+      - db.m5.4xlarge
+    Default: db.t3.medium
+    Description: Amazon RDS instance type for the Oracle Database instance
+    Type: String
   TNamespace:
     Default: tdecision
     Description: "Optional: The name of the kubernetes namespace in which the 3decision helm chart will be deployed.
@@ -303,12 +348,12 @@ Parameters:
     Type: String
   JWTKeysSecretName:
     Default: AWS::NoValue
-    Description: "Optional: The name of a secret in SecretsManager containing base64 keys in fields private_key and public_key
+    Description: "Conditional: The name of a secret in SecretsManager containing base64 keys in fields private_key and public_key
                   By default, this will have no value, in which case the variables JWTPrivateKey and JWTPublicKey will be used."
     Type: String
   JWTPrivateKey:
     Default: AWS::NoValue
-    Description: "Optional: An SSH private key in base64 format
+    Description: "Conditional: An SSH private key in base64 format
                   If JWTKeysSecretName is set, this variable is not used"
     Type: String
     NoEcho: true
@@ -317,6 +362,10 @@ Parameters:
     Description: "Optional: An SSH public key in base64 format.
                   If JWTKeysSecretName is set, this variable is not used"
     Type: String
+  PipelinePassword:
+    Default: "Required: The password that will allow you to access the pipeline admin platform"
+    Type: String
+    NoEcho: true
   ## TODELETE: THIS SHOULD BE DESTROYED BEFORE SENDING TO PRODUCTION
   TMPPassword:
     Type: String
