@@ -42,7 +42,6 @@ Metadata:
           - DBInstanceIdentifier
           - DBName
           - DBPassword
-          - DBSubnets
           - DBInstanceClass
       - Label:
           default: Discngine 3decision kube configuration
@@ -109,8 +108,6 @@ Metadata:
         default: Name of the database
       DBPassword:
         default: Password of the database
-      DBSubnets:
-        default: Subnets in the db subnet group
       DBInstanceClass:
         default: Instance type of the database
       TNamespace:
@@ -317,11 +314,6 @@ Parameters:
     Type: String
     MinLength: '8'
     MaxLength: '41'
-  DBSubnets:
-    Description: 'Required: Subnets to use for the creation of the db subnet group.
-                  Input your private subnets if you do not want your db to be publicly accessible.
-                  Input public subnets if the EKS cluster is not inside the same VPC as these subnets.'
-    Type: CommaDelimitedList
   DBInstanceClass:
     AllowedValues:
       - db.t3.micro
