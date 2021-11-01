@@ -3,7 +3,8 @@ project:
   owner: quickstart-eng@amazon.com
   regions:
   - eu-central-1
-  template: templates/discngine-3decision-main.template.yaml
+  template: templates/discngine-3decision-kube.template.yaml
+  build_submodules: false
   s3_regional_buckets: true
   parameters:
     RemoteAccessCIDR: 10.0.0.0/16
@@ -12,7 +13,7 @@ project:
   lambda_source_path: functions/source
   lambda_zip_path: functions/packages
 tests:
-  new-vpc:
+  kube:
     regions:
       - eu-central-1
     parameters:
@@ -31,6 +32,4 @@ tests:
       CollectionVolumeID: vol-0c22e077d294d7fc7
       Data3DecVolumeID: vol-0bb74baafcd581fa7
       PipelinePassword: z94_MLvb_10_8
-      RemoteAccessCIDR: 10.0.128.0/20
-      
-    template: templates/discngine-3decision-main.template.yaml
+    template: templates/discngine-3decision-kube.template.yaml

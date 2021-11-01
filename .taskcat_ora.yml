@@ -1,0 +1,25 @@
+project:
+  name: quickstart-discngine-3decision
+  owner: quickstart-eng@amazon.com
+  regions:
+  - eu-central-1
+  template: templates/discngine-3decision-oracle.template.yaml
+  build_submodules: false
+  s3_regional_buckets: true
+  parameters:
+    RemoteAccessCIDR: 10.0.0.0/16
+    QSS3BucketName: $[taskcat_autobucket]
+    QSS3BucketRegion: $[taskcat_current_region]
+  lambda_source_path: functions/source
+  lambda_zip_path: functions/packages
+tests:
+  kube:
+    regions:
+      - eu-central-1
+    parameters:
+      AvailabilityZones: $[taskcat_genaz_3]
+      KeyPairName: quickstart-3dec
+      DBMultiZone: 'false'
+      VPCID: vpc-0dde054ec72f963bf
+      DBSnapshot: arn:aws:rds:eu-central-1:751149478800:snapshot:snapshotpostimpv1
+    template: templates/discngine-3decision-oracle.template.yaml
