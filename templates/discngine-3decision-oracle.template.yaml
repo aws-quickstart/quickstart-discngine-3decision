@@ -1,7 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Oracle Database Template. (qs-1r4dcoii7)'
+Description: 'This template deploys the 3decision oracle database from an existing public snapshot (qs-1s40771km).'
 Metadata:
   cfn-lint: { config: { ignore_checks: [W9002, W9003, W9006] } }
+  QuickStartDocumentation:
+    EntrypointName: "3decision Database Deployment"
+  LintSpellExclude:
+    - Discngine
+    - 3decision
 Parameters:
   ORAVersion:
     AllowedValues:

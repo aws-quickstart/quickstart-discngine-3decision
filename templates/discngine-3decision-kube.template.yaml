@@ -3,14 +3,16 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: "This template deploys the 3decision helm chart, as well as related helm and kubernetes resources. (qs-1s40771km)."
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: "Kubernetes and Helm Deployment"
+    EntrypointName: "3decision Kubernetes and Helm Deployment"
   LintSpellExclude:
     - Discngine
     - 3decision
 Parameters:
   TNamespace:
+    Default: tdecision
     Type: String
   JWTSecretName:
+    Default: 3decision-jwt-secret
     Type: String
   JWTPrivateKey:
     Type: String
@@ -21,6 +23,7 @@ Parameters:
     Type: String
   DBPassword:
     Type: String
+    NoEcho: true
   DBConnectionString:
     Type: String
   CollectionVolumeID:
@@ -96,6 +99,7 @@ Resources:
           id_rsa.pub: ${JWTPublicKey}
   ChangeDBPass:
     Type: "AWSQS::Kubernetes::Resource"
+    DependsOn: TDecisionNamespace
     Properties:
       ClusterName: !Ref EKSClusterName
       Namespace: !Ref TNamespace
@@ -134,9 +138,6 @@ Resources:
       Name: tdecision
       Namespace: !Ref TNamespace
       Chart: oci://751149478800.dkr.ecr.eu-central-1.amazonaws.com/3decision-private:latest
-      RepositoryOptions:
-        Username: !Ref TMPUsername
-        Password: !Ref TMPPassword
       Values:
         nodeCloud.volumes.jwtSecret.name: !Ref JWTSecretName
         oracle.password: !Ref DBPassword
