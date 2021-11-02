@@ -355,7 +355,7 @@ Parameters:
                   If JWTKeysSecretName is set, this variable is not used"
     Type: String
   PipelinePassword:
-    Default: "Required: The password that will allow you to access the pipeline admin platform"
+    Description: "Required: The password that will allow you to access the pipeline admin platform"
     Type: String
     NoEcho: true
   ## TODELETE: THIS SHOULD BE DESTROYED BEFORE SENDING TO PRODUCTION
