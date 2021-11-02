@@ -287,7 +287,7 @@ Parameters:
     Default: 'AutoDetect'
     Description: Choose "No" if you already deployed another EKS Quick Start stack in your Region.
   NumberOfNodes:
-    Default: 2
+    Default: 3
     Description: The number of Amazon EKS node instances. The default is one for each of the three Availability Zones.
     Type: Number
   DBInstanceIdentifier:
@@ -446,6 +446,9 @@ Resources:
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
           S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketRegion: !Ref QSS3BucketRegion
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
         VPCID: !GetAtt VPCStack.Outputs.VPCID
         EKSClusterName: !GetAtt EKSStack.Outputs.EKSClusterName
         DBName: !Ref DBName
