@@ -33,14 +33,6 @@ Parameters:
   PipelinePassword:
     Type: String
     NoEcho: true
-##TO DELETE
-  TMPServer:
-    Type: String
-  TMPUsername:
-    Type: String
-  TMPPassword:
-    Type: String
-    NoEcho: true
 Resources:
   TDecisionNamespace:
     Type: "AWSQS::Kubernetes::Resource"

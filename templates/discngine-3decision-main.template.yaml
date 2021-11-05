@@ -36,6 +36,8 @@ Metadata:
           - NodeInstanceType
           - LoadBalancerType
           - NumberOfNodes
+          - AdditionalEKSAdminUserArn
+          - AdditionalEKSAdminRoleArn
       - Label:
           default : Discngine 3decision database configuration
         Parameters:
@@ -96,6 +98,10 @@ Metadata:
         default: Node instance type
       NumberOfNodes:
         default: Number of nodes
+      AdditionalEKSAdminUserArn:
+        default: Additional EKS admin ARN (IAM user)
+      AdditionalEKSAdminRoleArn:
+        default: Additional EKS admin ARN (IAM role)
       ConfigSetName:
         default: Config set name
       NodeVolumeSize:
@@ -358,10 +364,14 @@ Parameters:
     Description: "Required: The password that will allow you to access the pipeline admin platform"
     Type: String
     NoEcho: true
-  ## TODELETE: THIS SHOULD BE DESTROYED BEFORE SENDING TO PRODUCTION
-  TMPPassword:
+  AdditionalEKSAdminUserArn:
+    Default: ""
+    Description: "(Optional) IAM user Amazon Resource Name (ARN) to be granted administrative access to the EKS cluster."
     Type: String
-    NoEcho: true
+  AdditionalEKSAdminRoleArn:
+    Default: ""
+    Description: "(Optional) IAM role Amazon Resource Name (ARN) to be granted administrative access to the EKS cluster."
+    Type: String
 Conditions:
   ConfiSetNameSet: !Equals [!Ref ConfigSetName, '']
   CreateAdvancedConfigWithDefaults: !Not [Condition: ConfiSetNameSet]
@@ -436,8 +446,8 @@ Resources:
         EfsStorageClass: 'Enabled'
         ClusterAutoScaler: 'Enabled'
         EKSPublicAccessEndpoint: 'Enabled'
-        ## TODELETE: THIS SHOULD BE DESTROYED BEFORE SENDING TO PRODUCTION
-        AdditionalEKSAdminRoleArn: 'arn:aws:iam::751149478800:role/AWSReservedSSO_PowerUserPassRole_43aa7714fe785dcf'
+        AdditionalEKSAdminUserArn: !Ref AdditionalEKSAdminUserArn
+        AdditionalEKSAdminRoleArn: !Ref AdditionalEKSAdminRoleArn
   3decisionStack:
     Type: AWS::CloudFormation::Stack
     Properties:

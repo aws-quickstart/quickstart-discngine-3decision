@@ -179,16 +179,6 @@ Parameters:
     Default: 'false'
     Type: String
     AllowedValues: ['true', 'false']
-  ## TODELETE: THE THREE TMP VARIABLES SHOULD BE DELETED
-  TMPServer:
-    Type: String
-    Default: fra.ocir.io
-  TMPUsername:
-    Type: String
-    Default: idcs_federation/jonathan.manassen@discngine.com
-  TMPPassword:
-    Type: String
-    NoEcho: true
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
   UseJWTKeysSecret: !Not [ !Equals [ AWS::NoValue, !Ref JWTKeysSecretName ] ]
