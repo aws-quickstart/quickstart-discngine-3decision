@@ -236,6 +236,3 @@ Resources:
         DBConnectionString: !GetAtt RDSStack.Outputs.PrimaryConnectionString
         DBPassword: !Ref DBPassword
         PipelinePassword: !Ref PipelinePassword
-        TMPServer: !Ref TMPServer
-        TMPUsername: !Ref TMPUsername
-        TMPPassword: !Ref TMPPassword
