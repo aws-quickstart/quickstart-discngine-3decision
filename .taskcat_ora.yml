@@ -21,5 +21,5 @@ tests:
       KeyPairName: quickstart-3dec
       DBMultiZone: 'false'
       VPCID: vpc-0dde054ec72f963bf
-      DBSnapshot: arn:aws:rds:eu-central-1:751149478800:snapshot:snapshotpostimpv1
+      DBSnapshot: arn:aws:rds:eu-central-1:751149478800:snapshot:snapdng3decpd01
     template: templates/discngine-3decision-oracle.template.yaml
