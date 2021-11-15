@@ -468,5 +468,4 @@ Resources:
         JWTSecretName: !Ref JWTSecretName
         JWTPrivateKey: !Ref JWTPrivateKey
         JWTPublicKey: !Ref JWTPublicKey
-        TMPPassword: !Ref TMPPassword
         PipelinePassword: !Ref PipelinePassword
