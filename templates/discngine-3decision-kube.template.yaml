@@ -35,6 +35,10 @@ Parameters:
     NoEcho: true
   EtlServiceName:
     Default: etl
+    Type: String
+Mappings:
+  Config:
+    Prefix: { Value: 'eks-quickstart' }
 Resources:
   TDecisionNamespace:
     Type: "AWSQS::Kubernetes::Resource"
@@ -171,7 +175,7 @@ Resources:
         etl.volumes.data3dec.awsElasticBlockStore.volumeID: !Ref Data3DecVolumeID
         etl.volumes.collection.awsElasticBlockStore.volumeID: !Ref CollectionVolumeID
         etl.password: !Ref PipelinePassword
-        etl.availabilityZone: !Select [ 0, !GetAZs: !Ref 'AWS::Region' ]
+        etl.availabilityZone: !Select [ 0, Fn::GetAZs: !Ref 'AWS::Region' ]
         etl.dns: !Ref DNSName
   ChoralChart:
     Type: "AWSQS::Kubernetes::Helm"
