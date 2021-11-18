@@ -50,16 +50,18 @@ Parameters:
     Description: High Availability (Multi-AZ) for Oracle RDS.
         More informtion is available here - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html
     Type: String
-    AllowedValues:
-      - true
-      - false
-    Default: true
+    AllowedValues: [ 'true', 'false' ]
+    Default: 'true'
   DBSubnets:
     Description: 'Required: Subnets to use for the creation of the db subnet group
                   Defaults to the private subnets created in the VPC'
     Type: CommaDelimitedList
   VpcId:
     Description: 'Required: Id of the VPC'
+    Type: String
+  NodeSecurityGroupId:
+    Description: "Optionnal: Id of the EKS SecurityGroup in which we will add the RDS ingress"
+    Default: ''
     Type: String
 Mappings:
   OracleDetailsMap:
@@ -69,7 +71,8 @@ Mappings:
       Family: oracle-se2-cdb-19
       License: license-included
       Option: default:oracle-se2-cdb-19
-
+Conditions:
+  AddSecurityRule: !Not [ !Equals [ '', !Ref NodeSecurityGroupId ] ]
 Resources:
   EncryptionKey:
     Metadata:
@@ -136,6 +139,13 @@ Resources:
         IpProtocol: TCP
         FromPort: 1521
         ToPort: 1521
+  AddDBToSecurityEKS:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: AddSecurityRule
+    Properties:
+      IpProtocol: -1
+      SourceSecurityGroupId: !GetAtt DBSecurityGroup.GroupId
+      GroupId: !Ref NodeSecurityGroupId
   PrimaryDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:

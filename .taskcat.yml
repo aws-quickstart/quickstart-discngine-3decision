@@ -33,5 +33,5 @@ tests:
       PipelinePassword: z94_MLvb_10_8
       RemoteAccessCIDR: 10.0.128.0/20
       AdditionalEKSAdminRoleArn: 'arn:aws:iam::751149478800:role/AWSReservedSSO_PowerUserPassRole_43aa7714fe785dcf'
-      
+      DBMultiZone: 'false'
     template: templates/discngine-3decision-main.template.yaml

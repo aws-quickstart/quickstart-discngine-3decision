@@ -33,6 +33,8 @@ Parameters:
   PipelinePassword:
     Type: String
     NoEcho: true
+  EtlServiceName:
+    Default: etl
 Resources:
   TDecisionNamespace:
     Type: "AWSQS::Kubernetes::Resource"
@@ -120,9 +122,41 @@ Resources:
               requests:
                 cpu: 150m
                 memory: 250Mi
+  ETLIngress:
+    Type: "AWSQS::Kubernetes::Resource"
+    DependsOn: TDecisionNamespace
+    Properties:
+      ClusterName: !Ref EKSClusterName
+      Namespace: !Ref TNamespace
+      Manifest: !Sub |
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          name: ${TNamespace}-3decision-${EtlServiceName}-ingress
+            kubernetes.io/ingress.class: alb
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/load-balancer-name: lb-3dec-pp
+        spec:
+          rules:
+          - http:
+              paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: ${TNamespace}-3decision-${EtlServiceName}
+                    port: 
+                      number: 9944
+  DNSName:
+    Type: Custom::CliQuery
+    DependsOn: ETLIngress
+    Properties:
+      ServiceToken: !Sub ['arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:${Prefix}-ResourceReader', {Prefix: !FindInMap [Config, Prefix, Value]}]
+      AwsCliCommand: !Sub "elbv2 describe-load-balancers --names lb-3dec-pp --query 'LoadBalancers[0].{DNSName: DNSName}'"
+      IdField: 'DNSName'
   TdecisionChart:
     Type: "AWSQS::Kubernetes::Helm"
-    DependsOn: [ JWTSecret, RegistryAccessSecret ]
+    DependsOn: [ JWTSecret, RegistryAccessSecret, DNSName ]
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
     Properties:
       ClusterID: !Ref EKSClusterName
@@ -133,9 +167,12 @@ Resources:
         nodeCloud.volumes.jwtSecret.name: !Ref JWTSecretName
         oracle.password: !Ref DBPassword
         oracle.connectionString: !Ref DBConnectionString
-        pipelinePilot.volumes.data3dec.awsElasticBlockStore.volumeID: !Ref Data3DecVolumeID
-        pipelinePilot.volumes.collection.awsElasticBlockStore.volumeID: !Ref CollectionVolumeID
-        pipelinePilot.password: !Ref PipelinePassword
+        etl.name: !Ref EtlServiceName
+        etl.volumes.data3dec.awsElasticBlockStore.volumeID: !Ref Data3DecVolumeID
+        etl.volumes.collection.awsElasticBlockStore.volumeID: !Ref CollectionVolumeID
+        etl.password: !Ref PipelinePassword
+        etl.availabilityZone: !Select [ 0, !GetAZs: !Ref 'AWS::Region' ]
+        etl.dns: !Ref DNSName
   ChoralChart:
     Type: "AWSQS::Kubernetes::Helm"
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
