@@ -23,6 +23,7 @@ Metadata:
           - DBPassword
           - DBSubnets
           - DBInstanceClass
+          - DBMultiZone
       - Label:
           default: Discngine 3decision kube configuration
         Parameters:
@@ -58,6 +59,8 @@ Metadata:
         default: Subnets in the db subnet group
       DBInstanceClass:
         default: Instance type of the database
+      DBMultiZone:
+        default: Whether the DB is highly available
       TNamespace:
         default: 3decision Helm chart namespace
       JWTSecretName:
@@ -142,6 +145,12 @@ Parameters:
     Default: db.t3.medium
     Description: Amazon RDS instance type for the Oracle Database instance
     Type: String
+  DBMultiZone:
+    Description: High Availability (Multi-AZ) for Oracle RDS.
+        More informtion is available here - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html
+    Type: String
+    AllowedValues: [ 'true', 'false' ]
+    Default: 'true'
   TNamespace:
     Default: tdecision
     Description: "Optional: The name of the kubernetes namespace in which the 3decision helm chart will be deployed.
@@ -179,6 +188,10 @@ Parameters:
     Default: 'false'
     Type: String
     AllowedValues: ['true', 'false']
+  NodeSecurityGroup:
+    Description: "Optionnal: Id of the EKS SecurityGroup in which we will add the RDS ingress"
+    Default: ''
+    Type: String
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
   UseJWTKeysSecret: !Not [ !Equals [ AWS::NoValue, !Ref JWTKeysSecretName ] ]
@@ -218,6 +231,8 @@ Resources:
         DBSubnets: !Join [ ",", !Ref DBSubnets ]
         DBInstanceClass: !Ref DBInstanceClass
         VpcId: !Ref VPCID
+        NodeSecurityGroupId: !Ref NodeSecurityGroup
+        DBMultiZone: !Ref DBMultiZone
   3decisionKubeStack:
     Type: AWS::CloudFormation::Stack
     Properties:
