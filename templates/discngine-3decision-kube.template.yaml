@@ -161,7 +161,7 @@ Resources:
       IdField: 'DNSName'
   TdecisionChart:
     Type: "AWSQS::Kubernetes::Helm"
-    DependsOn: [ JWTSecret, RegistryAccessSecret, DNSName ]
+    DependsOn: [ JWTSecret, RegistryAccessSecret, DNSName, RabbitMQChart ]
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
     Properties:
       ClusterID: !Ref EKSClusterName
@@ -184,7 +184,7 @@ Resources:
     Properties:
       ClusterID: !Ref EKSClusterName
       Name: choral
-      Namespace: !Ref TNamespace
+      Namespace: choral
       Chart: oci://fra.ocir.io/discngine1/3decision_kube/choral-helm:latest
       Values:
         oracle.password: !Ref DBPassword

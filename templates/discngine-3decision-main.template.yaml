@@ -53,6 +53,7 @@ Metadata:
           - JWTSecretName
           - JWTPrivateKey
           - JWTPublicKey
+          - JWTKeysSecretName
           - PipelinePassword
       - Label:
           default: AWS Quick Start configuration
