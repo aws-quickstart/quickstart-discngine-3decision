@@ -249,6 +249,7 @@ Resources:
         EKSClusterName: !Ref EKSClusterName
         Data3DecVolumeID: !GetAtt EBSStack.Outputs.DataVolumeID
         CollectionVolumeID: !GetAtt EBSStack.Outputs.CollectionVolumeID
+        ChoralVolumeID: !GetAtt EBSStack.Outputs.ChoralVolumeID
         DBConnectionString: !GetAtt RDSStack.Outputs.PrimaryConnectionString
         DBPassword: !Ref DBPassword
         PipelinePassword: !Ref PipelinePassword

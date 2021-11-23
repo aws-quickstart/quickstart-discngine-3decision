@@ -30,6 +30,8 @@ Parameters:
     Type: String
   Data3DecVolumeID:
     Type: String
+  ChoralVolumeID:
+    Type: String
   PipelinePassword:
     Type: String
     NoEcho: true
@@ -189,3 +191,4 @@ Resources:
       Values:
         oracle.password: !Ref DBPassword
         oracle.connectionString: !Ref DBConnectionString
+        pvc.awsElasticBlockStore.volumeID: !Ref ChoralVolumeID
