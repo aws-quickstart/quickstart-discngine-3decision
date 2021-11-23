@@ -275,13 +275,13 @@ Parameters:
   ConfigSetName:
     Type: String
     Default: "dng-3decision"
-    Description: (Optional) Name used to map advanced parameters to an EKS cluster.
-                  Change to blank to create eks default parameters.
+    Description: "Optional: Name used to map advanced parameters to an EKS cluster.
+                  Change to blank to create eks default parameters."
   NodeVolumeSize:
     Type: String
     Default: 100
-    Description: (Optional) Size of EBS volumes attached to worker nodes.
-                  Increase this size if your pods are getting evicted with a disk pressure annotation.                
+    Description: "Optional: Size of EBS volumes attached to worker nodes.
+                  Increase this size if your pods are getting evicted with a disk pressure annotation."       
   WorkloadNamespace:
     Default: "discngine-3decision"
     Type: String
@@ -367,7 +367,7 @@ Parameters:
     NoEcho: true
   JWTPublicKey:
     Default: AWS::NoValue
-    Description: "Optional: An SSH public key in base64 format.
+    Description: "Conditional: An SSH public key in base64 format.
                   If JWTKeysSecretName is set, this variable is not used"
     Type: String
   PipelinePassword:
@@ -376,11 +376,11 @@ Parameters:
     NoEcho: true
   AdditionalEKSAdminUserArn:
     Default: ""
-    Description: "(Optional) IAM user Amazon Resource Name (ARN) to be granted administrative access to the EKS cluster."
+    Description: "Optional: IAM user Amazon Resource Name (ARN) to be granted administrative access to the EKS cluster."
     Type: String
   AdditionalEKSAdminRoleArn:
     Default: ""
-    Description: "(Optional) IAM role Amazon Resource Name (ARN) to be granted administrative access to the EKS cluster."
+    Description: "Optional: IAM role Amazon Resource Name (ARN) to be granted administrative access to the EKS cluster."
     Type: String
 Conditions:
   ConfiSetNameSet: !Equals [!Ref ConfigSetName, '']
