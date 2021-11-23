@@ -177,7 +177,7 @@ Parameters:
     NoEcho: true
   JWTPublicKey:
     Default: AWS::NoValue
-    Description: "Optional: An SSH public key in base64 format.
+    Description: "Conditional: An SSH public key in base64 format.
                   If JWTKeysSecretName is set, this variable is not used"
     Type: String
   PipelinePassword:
