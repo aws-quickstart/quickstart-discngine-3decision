@@ -24,6 +24,14 @@ Resources:
         - !GetAZs 
           Ref: 'AWS::Region'
       SnapshotId: 'snap-0864d7a064ccaff25'
+  Choral:
+    Type: "AWS::EC2::Volume"
+    Properties:
+      AvailabilityZone: !Select 
+        - 1
+        - !GetAZs 
+          Ref: 'AWS::Region'
+      SnapshotId: 'snap-0ed4755b013542696'
 Outputs:
   CollectionVolumeID:
     Description: ID of the collection volume
@@ -31,3 +39,6 @@ Outputs:
   DataVolumeID:
     Description: ID of the data3dec volume
     Value: !Ref Data3Dec
+  ChoralVolumeID:
+    Description: ID of the choral volume
+    Value: !Ref Choral
