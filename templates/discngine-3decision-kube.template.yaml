@@ -66,21 +66,6 @@ Resources:
         image.tag: 3.8.19-debian-10-r30
         rabbitmq.username: discngine
         rabbitmq.password: lapin79
-  RegistryAccessSecret:
-    Type: "AWSQS::Kubernetes::Resource"
-    DependsOn: TDecisionNamespace
-    Properties:
-      ClusterName: !Ref EKSClusterName
-      Namespace: !Ref TNamespace
-      Manifest: !Sub |
-        kind: Secret
-        apiVersion: v1
-        type: kubernetes.io/dockerconfigjson
-        metadata:
-          name: ociregistry
-          namespace: ${TNamespace}
-        data:
-          .dockerconfigjson: ew0KICAiYXV0aHMiOiB7DQogICAgImZyYS5vY2lyLmlvIjogew0KICAgICAgImF1dGgiOiAiWkdselkyNW5hVzVsTVM5cFpHTnpYMlpsWkdWeVlYUnBiMjR2YW05dVlYUm9ZVzR1YldGdVlYTnpaVzVBWkdselkyNW5hVzVsTG1OdmJUcDFXRFVqWTFKbmRVSTRURlpIWWs4eFozUXROZz09Ig0KICAgIH0NCiAgfQ0KfQ0K
   JWTSecret:
     Type: "AWSQS::Kubernetes::Resource"
     DependsOn: TDecisionNamespace
