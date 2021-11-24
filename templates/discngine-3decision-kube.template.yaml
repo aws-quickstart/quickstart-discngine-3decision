@@ -149,7 +149,7 @@ Resources:
       IdField: 'DNSName'
   TdecisionChart:
     Type: "AWSQS::Kubernetes::Helm"
-    DependsOn: [ JWTSecret, RegistryAccessSecret, DNSName, RabbitMQChart ]
+    DependsOn: [ JWTSecret, DNSName, RabbitMQChart ]
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
     Properties:
       ClusterID: !Ref EKSClusterName
