@@ -119,7 +119,8 @@ Resources:
               alter user ADMIN identified by "${DBPassword}";
               alter user PD_T1_DNG_THREEDECISION identified by "${DBPassword}";
               alter user PD_T1_DNG_CORE identified by "${DBPassword}";
-              alter user CHEMBL_23 identified by "${DBPassword}";' > changepwd.sql;
+              alter user CHEMBL_23 identified by "${DBPassword}";
+              alter user CHORAL_OWNER identified by "${DBPassword}";' > changepwd.sql;
               /root/sqlcl/bin/sql admin/Ch4ng3m3f0rs3cur3p4ss@${DBConnectionString} @changepwd.sql
             resources:
               limits:
@@ -191,4 +192,5 @@ Resources:
       Values:
         oracle.password: !Ref DBPassword
         oracle.connectionString: !Ref DBConnectionString
-        pvc.awsElasticBlockStore.volumeID: !Ref ChoralVolumeID
+        pv.awsElasticBlockStore.volumeID: !Ref ChoralVolumeID
+        pv.availabilityZone: !Select [ 1, Fn::GetAZs: !Ref 'AWS::Region' ]
