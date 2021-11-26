@@ -126,7 +126,7 @@ Resources:
       GroupDescription: "Opens incoming requests on Oracle RDS port 1521"
       VpcId: !Ref VpcId
       SecurityGroupIngress:
-      - CidrIp: 0.0.0.0/0
+      - SourceSecurityGroupId: !Ref NodeSecurityGroupId
         IpProtocol: TCP
         FromPort: 1521
         ToPort: 1521

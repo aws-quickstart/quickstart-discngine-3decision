@@ -134,8 +134,7 @@ Parameters:
     MaxLength: '41'
   DBSubnets:
     Description: 'Required: Subnets to use for the creation of the db subnet group.
-                  Input your private subnets if you do not want your db to be publicly accessible.
-                  Input public subnets if the EKS cluster is not inside the same VPC as these subnets.'
+                  These need to be the same subnets as the ones containing your eks nodes'
     Type: CommaDelimitedList
   DBInstanceClass:
     AllowedValues:
