@@ -32,7 +32,8 @@ Metadata:
           - JWTPrivateKey
           - JWTPublicKey
           - JWTKeysSecretName
-          - PipelinePassword
+          - EtlUser
+          - EtlPassword
       - Label:
           default: AWS Quick Start configuration
         Parameters:
@@ -70,8 +71,10 @@ Metadata:
         default: Private SSH key in base 64 used for JWT
       JWTPublicKey:
         default: Public SSH key in base 64 used for JWT
-      PipelinePassword:
-        default: Password used for pipeline pilot
+      EtlUser:
+        default: Username used for etl
+      EtlPassword:
+        default: Password used for etl
       ConfigureEKS:
         default: Boolean determining whether to configure EKS
 
@@ -180,8 +183,12 @@ Parameters:
     Description: "Conditional: An SSH public key in base64 format.
                   If JWTKeysSecretName is set, this variable is not used"
     Type: String
-  PipelinePassword:
-    Description: "Required: The password that will allow you to access the pipeline admin platform"
+  EtlUser:
+    Default: "3decision"
+    Description: "Required: The username that will allow you to connect to the platform"
+    Type: String
+  EtlPassword:
+    Description: "Required: The password that will allow you to connect to the platform"
     Type: String
     NoEcho: true
   ConfigureEKS:
@@ -252,4 +259,5 @@ Resources:
         ChoralVolumeID: !GetAtt EBSStack.Outputs.ChoralVolumeID
         DBConnectionString: !GetAtt RDSStack.Outputs.PrimaryConnectionString
         DBPassword: !Ref DBPassword
-        PipelinePassword: !Ref PipelinePassword
+        EtlUser: !Ref EtlUser
+        EtlPassword: !Ref EtlPassword

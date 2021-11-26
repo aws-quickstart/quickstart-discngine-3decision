@@ -53,7 +53,8 @@ Metadata:
           - JWTPrivateKey
           - JWTPublicKey
           - JWTKeysSecretName
-          - PipelinePassword
+          - EtlUser
+          - EtlPassword
       - Label:
           default: AWS Quick Start configuration
         Parameters:
@@ -125,8 +126,10 @@ Metadata:
         default: Private SSH key in base 64 used for JWT
       JWTPublicKey:
         default: Public SSH key in base 64 used for JWT
-      PipelinePassword:
-        default: Password used for pipeline pilot
+      EtlUser:
+        default: Username used for etl
+      EtlPassword:
+        default: Password used for etl
 
 Parameters:
   KeyPairName:
@@ -259,12 +262,12 @@ Parameters:
   ConfigSetName:
     Type: String
     Default: "dng-3decision"
-    Description: "Optional: Name used to map advanced parameters to an EKS cluster.
+    Description: "Required: Name used to map advanced parameters to an EKS cluster.
                   Change to blank to create eks default parameters."
   NodeVolumeSize:
     Type: String
     Default: 100
-    Description: "Optional: Size of EBS volumes attached to worker nodes.
+    Description: "Required: Size of EBS volumes attached to worker nodes.
                   Increase this size if your pods are getting evicted with a disk pressure annotation."       
   WorkloadNamespace:
     Default: "discngine-3decision"
@@ -286,7 +289,7 @@ Parameters:
     Type: Number
   DBInstanceIdentifier:
     Default: db3dec
-    Description: "Optional: The database instance name.
+    Description: "Required: The database instance name.
                   This defaults to db3dec."
     Type: String
     MinLength: '1'
@@ -295,7 +298,7 @@ Parameters:
     ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
   DBName:
     Default: ORCL
-    Description: "Optional: The name given to the RDS Oracle database.
+    Description: "Required: The name given to the RDS Oracle database.
                   This defaults to ORCL."
     Type: String
     MinLength: '1'
@@ -328,13 +331,13 @@ Parameters:
     Default: 'false'
   TNamespace:
     Default: tdecision
-    Description: "Optional: The name of the kubernetes namespace in which the 3decision helm chart will be deployed.
+    Description: "Required: The name of the kubernetes namespace in which the 3decision helm chart will be deployed.
                   This will default to tdecision if not given.
                   The namespace will be created if it doesn't already exists."
     Type: String
   JWTSecretName:
     Default: 3decision-jwt-secret
-    Description: "Optional: The name of the kubernetes secret that will contain the ssh key
+    Description: "Required: The name of the kubernetes secret that will contain the ssh key
                   This will default to 3decision-jwt-secret.
                   It will be placed in the same namespace as the 3decision helm chart"
     Type: String
@@ -354,8 +357,12 @@ Parameters:
     Description: "Conditional: An SSH public key in base64 format.
                   If JWTKeysSecretName is set, this variable is not used"
     Type: String
-  PipelinePassword:
-    Description: "Required: The password that will allow you to access the pipeline admin platform"
+  EtlUser:
+    Default: "3decision"
+    Description: "Required: The username that will allow you to connect to the platform"
+    Type: String
+  EtlPassword:
+    Description: "Required: The password that will allow you to connect to the platform"
     Type: String
     NoEcho: true
   AdditionalEKSAdminUserArn:
@@ -401,7 +408,7 @@ Resources:
               - !Sub '${QSS3BucketName}-${AWS::Region}'
               - !Ref QSS3BucketName
       Parameters:
-        AvailabilityZones: Fn::GetAZs: !Ref 'AWS::Region'
+        AvailabilityZones: !Join [',', Fn::GetAZs: !Ref 'AWS::Region']
         NumberOfAZs: '3'
         VPCCIDR: !Ref VPCCIDR
         PrivateSubnet1ACIDR: !Ref PrivateSubnet1CIDR
@@ -462,6 +469,7 @@ Resources:
         JWTSecretName: !Ref JWTSecretName
         JWTPrivateKey: !Ref JWTPrivateKey
         JWTPublicKey: !Ref JWTPublicKey
-        PipelinePassword: !Ref PipelinePassword
+        EtlUser: !Ref EtlUser
+        EtlPassword: !Ref EtlPassword
         NodeSecurityGroup: !GetAtt EKSStack.Outputs.NodeGroupSecurityGroup
         DBMultiZone: !Ref DBMultiZone
