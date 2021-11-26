@@ -15,15 +15,6 @@ Parameters:
     Description: Amazon RDS Oracle version
     Type: String
   DBInstanceClass:
-    AllowedValues:
-      - db.t3.micro
-      - db.t3.small
-      - db.t3.medium
-      - db.m5.large
-      - db.m5.xlarge
-      - db.m5.2xlarge
-      - db.m5.4xlarge
-    Default: db.t3.medium
     Description: Amazon RDS instance type for the Oracle Database instance
     Type: String
   DBInstanceIdentifier:
