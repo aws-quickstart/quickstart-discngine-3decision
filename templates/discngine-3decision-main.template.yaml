@@ -14,7 +14,6 @@ Metadata:
       - Label:
           default: "Network configuration"
         Parameters:
-          - AvailabilityZones
           - VPCCIDR
           - PublicSubnet1CIDR
           - PublicSubnet2CIDR
@@ -88,8 +87,6 @@ Metadata:
         default: Allowed external access CIDR
       VPCCIDR:
         default: VPC CIDR
-      AvailabilityZones:
-        default: Availability Zones
       PerAccountSharedResources:
         default: Per account shared resources
       PerRegionSharedResources:
@@ -223,11 +220,6 @@ Parameters:
     Default: 10.0.64.0/19
     Description: The CIDR block for private subnet 3 located in Availability Zone 3.
     Type: String
-  AvailabilityZones:
-    Description: List of Availability Zones to use for the subnets in the VPC. This deployment uses two
-      Availability Zones, and the logical order of your
-      selections is preserved.
-    Type: List<AWS::EC2::AvailabilityZone::Name>
   QSS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
     ConstraintDescription: Quick Start bucket name can include numbers, lowercase
@@ -333,7 +325,7 @@ Parameters:
         More informtion is available here - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html
     Type: String
     AllowedValues: [ 'true', 'false' ]
-    Default: 'true'
+    Default: 'false'
   TNamespace:
     Default: tdecision
     Description: "Optional: The name of the kubernetes namespace in which the 3decision helm chart will be deployed.
@@ -409,7 +401,7 @@ Resources:
               - !Sub '${QSS3BucketName}-${AWS::Region}'
               - !Ref QSS3BucketName
       Parameters:
-        AvailabilityZones: !Join [',', !Ref 'AvailabilityZones']
+        AvailabilityZones: Fn::GetAZs: !Ref 'AWS::Region'
         NumberOfAZs: '3'
         VPCCIDR: !Ref VPCCIDR
         PrivateSubnet1ACIDR: !Ref PrivateSubnet1CIDR
