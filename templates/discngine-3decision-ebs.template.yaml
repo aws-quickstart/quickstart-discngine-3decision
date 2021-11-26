@@ -31,7 +31,7 @@ Resources:
         - 1
         - !GetAZs 
           Ref: 'AWS::Region'
-      SnapshotId: 'snap-0ed4755b013542696'
+      SnapshotId: 'snap-089f9b15de542ee74'
 Outputs:
   CollectionVolumeID:
     Description: ID of the collection volume
