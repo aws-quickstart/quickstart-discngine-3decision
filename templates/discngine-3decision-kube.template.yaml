@@ -32,7 +32,9 @@ Parameters:
     Type: String
   ChoralVolumeID:
     Type: String
-  PipelinePassword:
+  EtlUser:
+    Type: String
+  EtlPassword:
     Type: String
     NoEcho: true
   EtlServiceName:
@@ -163,7 +165,8 @@ Resources:
         etl.name: !Ref EtlServiceName
         etl.volumes.data3dec.awsElasticBlockStore.volumeID: !Ref Data3DecVolumeID
         etl.volumes.collection.awsElasticBlockStore.volumeID: !Ref CollectionVolumeID
-        etl.password: !Ref PipelinePassword
+        etl.user: !Ref EtlUser
+        etl.password: !Ref EtlPassword
         volumes.availabilityZone: !Select [ 2, Fn::GetAZs: !Ref 'AWS::Region' ]
         etl.dns: !Ref DNSName
   ChoralChart:
