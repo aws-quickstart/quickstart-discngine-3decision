@@ -467,7 +467,9 @@ Resources:
         EKSClusterName: !GetAtt EKSStack.Outputs.EKSClusterName
         DBName: !Ref DBName
         DBPassword: !Ref DBPassword
-        DBSubnets: !Join [ ",", [ !GetAtt VPCStack.Outputs.PublicSubnet1ID, !GetAtt VPCStack.Outputs.PublicSubnet2ID, !GetAtt VPCStack.Outputs.PublicSubnet3ID ] ]
+        DBInstanceClass: !Ref DBInstanceClass
+        DBMultiZone: !Ref DBMultiZone
+        DBSubnets: !Join [ ",", [ !GetAtt VPCStack.Outputs.PrivateSubnet1AID, !GetAtt VPCStack.Outputs.PrivateSubnet2AID, !GetAtt VPCStack.Outputs.PrivateSubnet3AID ] ]
         TNamespace: !Ref TNamespace
         JWTSecretName: !Ref JWTSecretName
         JWTPrivateKey: !Ref JWTPrivateKey
@@ -475,4 +477,3 @@ Resources:
         EtlUser: !Ref EtlUser
         EtlPassword: !Ref EtlPassword
         NodeSecurityGroup: !GetAtt EKSStack.Outputs.NodeGroupSecurityGroup
-        DBMultiZone: !Ref DBMultiZone
