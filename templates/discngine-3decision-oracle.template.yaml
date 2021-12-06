@@ -157,7 +157,7 @@ Resources:
       DBSubnetGroupName: !Ref SubnetGroup
       VPCSecurityGroups: [ !GetAtt DBSecurityGroup.GroupId ]
       StorageType: gp2
-      DBSnapshotIdentifier: 'arn:aws:rds:eu-central-1:751149478800:snapshot:dng3decpd01'
+      DBSnapshotIdentifier: 'arn:aws:rds:${AWS::Region}:751149478800:snapshot:dng3decpd01'
   DBParamGroup:
     Type: AWS::RDS::DBParameterGroup
     Properties:
