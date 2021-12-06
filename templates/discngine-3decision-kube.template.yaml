@@ -106,7 +106,7 @@ Resources:
               alter user ADMIN identified by "${DBPassword}";
               alter user PD_T1_DNG_THREEDECISION identified by "${DBPassword}";
               alter user PD_T1_DNG_CORE identified by "${DBPassword}";
-              alter user CHEMBL_23 identified by "${DBPassword}";
+              alter user CHEMBL_29 identified by "${DBPassword}";
               alter user CHORAL_OWNER identified by "${DBPassword}";' > changepwd.sql;
               /root/sqlcl/bin/sql admin/Ch4ng3m3f0rs3cur3p4ss@${DBConnectionString} @changepwd.sql
             resources:
@@ -139,7 +139,7 @@ Resources:
                 pathType: Prefix
                 backend:
                   service:
-                    name: ${TNamespace}-3decision-${EtlServiceName}
+                    name: ${TNamespace}-3decision-aws-${EtlServiceName}
                     port: 
                       number: 9944
   DNSName:
@@ -171,6 +171,7 @@ Resources:
         etl.dns: !Ref DNSName
   ChoralChart:
     Type: "AWSQS::Kubernetes::Helm"
+    DependsOn: ChangeDBPass
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
     Properties:
       ClusterID: !Ref EKSClusterName
