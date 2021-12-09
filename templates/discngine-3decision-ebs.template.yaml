@@ -13,70 +13,10 @@ Mappings:
       Collection: snap-0b2bfb398a8fcadbc
       Data3Dec: snap-03bef781d32ece8ef
       Choral: snap-0f4d129efcfaaf899
-    us-east-2:
-      Collection: snap-086854402353620f3
-      Data3Dec: snap-01281ec05da6df489
-      Choral: snap-0066865151bd5052a
-    us-west-1:
-      Collection: snap-064e32e682076805f
-      Data3Dec: snap-0fae42bb2825aee72
-      Choral: snap-0efe7337d6a252528
-    us-west-2:
-      Collection: snap-07c51e4de8c9fce51
-      Data3Dec: snap-0a113d15c0bd14435
-      Choral: snap-03050c47ebce57ddb
-    ap-south-1:
-      Collection: snap-0b8381a2ba2a8b4b8
-      Data3Dec: snap-0634d1ad33aac3ef5
-      Choral: snap-0877b8e4829a591b1
-    ap-northeast-1:
-      Collection: snap-0489aa714e854d4aa
-      Data3Dec: snap-09c90af383a8a56e8
-      Choral: snap-058ab31cf98617ab4
-    ap-northeast-2:
-      Collection: snap-00698354a0c538a68
-      Data3Dec: snap-0ec93bf9d5068ce94
-      Choral: snap-0ec3d8dd86c292e8f
-    ap-northeast-3:
-      Collection: snap-04c6bc97da019c35b
-      Data3Dec: snap-05c583de3b5487bde
-      Choral: snap-0e308f4009534642d
-    ap-southeast-1:
-      Collection: snap-086cf0952806a7c62
-      Data3Dec: snap-054caccb3a922a5bc
-      Choral: snap-005c2f6d1ef418510
-    ap-southeast-2:
-      Collection: snap-0780d0941274c3631
-      Data3Dec: snap-08d6927baef3a705c
-      Choral: snap-02864437886e3bbc0
-    ca-central-1:
-      Collection: snap-0d8c621189693d782
-      Data3Dec: snap-0f2566125b1fc258d
-      Choral: snap-0b8e1eb415f3b964a
     eu-central-1:
       Collection: snap-064065f29ff3d074a
       Data3Dec: snap-0864d7a064ccaff25
       Choral: snap-089f9b15de542ee74
-    eu-west-1:
-      Collection: snap-0ef1609ed19b46398
-      Data3Dec: snap-078277b8c4d098ae5
-      Choral: snap-07cb265f07fce0a90
-    eu-west-2:
-      Collection: snap-05e1a74f989f6ede3
-      Data3Dec: snap-0542939e2f135cc20
-      Choral: snap-0c7c52c86c8dcaee5
-    eu-west-3:
-      Collection: snap-0195933ea6743cc7d
-      Data3Dec: snap-0aff58c86528212c4
-      Choral: snap-0a99684645c4e6156
-    eu-north-1:
-      Collection: snap-07cab2a7514596561
-      Data3Dec: snap-00f2236be9b809838
-      Choral: snap-0e66ceda6701f2225
-    sa-east-1:
-      Collection: snap-096153b6904f7e187
-      Data3Dec: snap-013ad22bc6553deeb
-      Choral: snap-0954afd2067930323
 Resources:
   Collection:
     Type: "AWS::EC2::Volume"
