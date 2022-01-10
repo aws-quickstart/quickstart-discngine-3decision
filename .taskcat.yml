@@ -20,6 +20,6 @@ tests:
       KeyPairName: key
       JWTPrivateKey: private
       JWTPublicKey: public
-      PipelinePassword: password
+      EtlPassword: password
       DBPassword: password
     template: templates/discngine-3decision-main.template.yaml
