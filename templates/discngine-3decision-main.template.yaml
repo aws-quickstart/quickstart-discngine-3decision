@@ -8,7 +8,6 @@ Metadata:
     - Discngine
     - 3decision
     - namespace
-    - No
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
@@ -245,6 +244,7 @@ Parameters:
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
     Description: The CIDR IP range that is permitted to access the instances. We recommend
       that you set this value to a trusted IP range.
+    Default: "127.0.0.1/32"
     Type: String
   ConfigSetName:
     Type: String
