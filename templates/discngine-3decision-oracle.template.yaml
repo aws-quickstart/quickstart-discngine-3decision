@@ -77,6 +77,7 @@ Resources:
     UpdateReplacePolicy: Retain
     Type: AWS::KMS::Key
     Properties:
+      EnableKeyRotation: true
       KeyPolicy:
         Version: 2012-10-17
         Id: !Ref AWS::StackName
@@ -151,13 +152,15 @@ Resources:
       EngineVersion: !FindInMap [OracleDetailsMap, !Ref ORAVersion, Version]
       LicenseModel: !FindInMap [OracleDetailsMap, !Ref ORAVersion, License]
       OptionGroupName: !FindInMap [OracleDetailsMap, !Ref ORAVersion, Option]
+      Port: !Ref DBPort
       MultiAZ: !Ref DBMultiZone
       StorageEncrypted: true
       KmsKeyId: !GetAtt EncryptionKey.Arn
       DBSubnetGroupName: !Ref SubnetGroup
       VPCSecurityGroups: [ !GetAtt DBSecurityGroup.GroupId ]
       StorageType: gp2
-      DBSnapshotIdentifier: 'arn:aws:rds:${AWS::Region}:751149478800:snapshot:dng3decpd01'
+      DBSnapshotIdentifier: !Sub 'arn:aws:rds:${AWS::Region}:751149478800:snapshot:dng3decpd01'
+      PubliclyAccessible: false
   DBParamGroup:
     Type: AWS::RDS::DBParameterGroup
     Properties:

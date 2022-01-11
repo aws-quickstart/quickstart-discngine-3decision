@@ -1,6 +1,6 @@
 ---
 AWSTemplateFormatVersion: "2010-09-09"
-Description: This creates a VPC, Public Subnets and Private Subnets, and sets up Discngine 3decision infrastructure. (qs-1s40771i4).
+Description: "This creates a VPC, Public Subnets and Private Subnets, and sets up Discngine 3decision infrastructure. (qs-1s40771i4)."
 Metadata:
   QuickStartDocumentation:
     EntrypointName: "Launch into a new VPC"
@@ -31,9 +31,7 @@ Metadata:
         Parameters:
           - ConfigSetName
           - NodeVolumeSize
-          - WorkloadNamespace
           - NodeInstanceType
-          - LoadBalancerType
           - NumberOfNodes
           - AdditionalEKSAdminUserArn
           - AdditionalEKSAdminRoleArn
@@ -92,8 +90,6 @@ Metadata:
         default: Per account shared resources
       PerRegionSharedResources:
         default: Per region shared resources
-      LoadBalancerType:
-        default: Load balancer type
       NodeInstanceType:
         default: Node instance type
       NumberOfNodes:
@@ -106,8 +102,6 @@ Metadata:
         default: Config set name
       NodeVolumeSize:
         default: Size of worker nodes volumes
-      WorkloadNamespace:
-        default: Kubernetes namespace
       DBInstanceIdentifier:
         default: Identifier of the database
       DBName:
@@ -252,13 +246,6 @@ Parameters:
     Description: The CIDR IP range that is permitted to access the instances. We recommend
       that you set this value to a trusted IP range.
     Type: String
-  LoadBalancerType:
-    Type: String
-    Default: ALB
-    AllowedValues:
-      - ALB
-      - NLB
-    Description: EKS Service Load Balancer Type.
   ConfigSetName:
     Type: String
     Default: "dng-3decision"
@@ -269,10 +256,6 @@ Parameters:
     Default: 100
     Description: "Required: Size of EBS volumes attached to worker nodes.
                   Increase this size if your pods are getting evicted with a disk pressure annotation."
-  WorkloadNamespace:
-    Default: "discngine-3decision"
-    Type: String
-    Description: The Kubernetes namespace to use when provisioning the workload.
   PerAccountSharedResources:
     Type: String
     AllowedValues: ['AutoDetect', 'Yes', 'No']
@@ -465,12 +448,14 @@ Resources:
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         VPCID: !GetAtt VPCStack.Outputs.VPCID
         EKSClusterName: !GetAtt EKSStack.Outputs.EKSClusterName
+        DBInstanceIdentifier: !Ref DBInstanceIdentifier
         DBName: !Ref DBName
         DBPassword: !Ref DBPassword
         DBInstanceClass: !Ref DBInstanceClass
         DBMultiZone: !Ref DBMultiZone
         DBSubnets: !Join [ ",", [ !GetAtt VPCStack.Outputs.PrivateSubnet1AID, !GetAtt VPCStack.Outputs.PrivateSubnet2AID, !GetAtt VPCStack.Outputs.PrivateSubnet3AID ] ]
         TNamespace: !Ref TNamespace
+        JWTKeysSecretName: !Ref JWTKeysSecretName
         JWTSecretName: !Ref JWTSecretName
         JWTPrivateKey: !Ref JWTPrivateKey
         JWTPublicKey: !Ref JWTPublicKey
