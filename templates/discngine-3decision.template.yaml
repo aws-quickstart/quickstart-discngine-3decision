@@ -16,6 +16,11 @@ Metadata:
           - VPCID
           - ConfigureEKS
       - Label:
+          default: Discngine 3decision dns configuration
+        Parameters:
+          - HostedZoneId
+          - DomainName
+      - Label:
           default : Discngine 3decision database configuration
         Parameters:
           - DBInstanceIdentifier
@@ -32,8 +37,18 @@ Metadata:
           - JWTPrivateKey
           - JWTPublicKey
           - JWTKeysSecretName
-          - EtlUser
-          - EtlPassword
+      - Label:
+          default: Discngine 3decision login configuration
+        Parameters:
+          - AzureTenant
+          - AzureClientId
+          - AzureSecret
+          - AzureRedirectUri
+          - OktaDomain
+          - OktaServerId
+          - OktaClientId
+          - OktaSecret
+          - OktaRedirectUrl
       - Label:
           default: AWS Quick Start configuration
         Parameters:
@@ -71,12 +86,30 @@ Metadata:
         default: Private SSH key in base 64 used for JWT
       JWTPublicKey:
         default: Public SSH key in base 64 used for JWT
-      EtlUser:
-        default: Username used for etl
-      EtlPassword:
-        default: Password used for etl
       ConfigureEKS:
         default: Boolean determining whether to configure EKS
+      HostedZoneId:
+        default: Route 53 hosted zone Id
+      DomainName:
+        default: Domain name used for load balancing
+      AzureTenant:
+        default: Azure tenant
+      AzureClientId:
+        default: Azure client id for 3decision login
+      AzureSecret:
+        default: Azure secret for 3decision login
+      AzureRedirectUri:
+        default: Azure redirect uri for 3decision login
+      OktaDomain:
+        default: Okta domain
+      OktaServerId:
+        default: Okta server id
+      OktaClientId:
+        default: Okta client id for 3decision login
+      OktaSecret:
+        default: Okta secret for 3decision login
+      OktaRedirectUrl:
+        default: Okta redirect uri for 3decision login
 
 Parameters:
   EKSClusterName:
@@ -185,14 +218,6 @@ Parameters:
     Description: "Conditional: An SSH public key in base64 format.
                   If JWTKeysSecretName is set, this variable is not used"
     Type: String
-  EtlUser:
-    Default: "3decision"
-    Description: "Required: The username that will allow you to connect to the platform"
-    Type: String
-  EtlPassword:
-    Description: "Required: The password that will allow you to connect to the platform"
-    Type: String
-    NoEcho: true
   ConfigureEKS:
     Description: "Optionnal: Set to true to create EKS quickstart specific resources for your EKS cluster"
     Default: 'false'
@@ -202,10 +227,55 @@ Parameters:
     Description: "Optionnal: Id of the EKS SecurityGroup in which we will add the RDS ingress"
     Default: ''
     Type: String
+  HostedZoneId:
+    Default: ""
+    Description: "Optional: Creates dns records for the given route 53 hosted zone if given."
+    Type: String
+  DomainName:
+    Default: ""
+    Description: "Required: Domain name used for load balancer rules"
+    Type: String
+  AzureTenant:
+    Default: ""
+    Description: "Conditional: Azure tenant used for app login page. If azure login parameters are given okta parameters are not required"
+    Type: String
+  AzureClientId:
+    Default: ""
+    Description: "Conditional: Azure client id used for app login page. If azure login parameters are given okta parameters are not required"
+    Type: String
+  AzureSecret:
+    Default: ""
+    Description: "Conditional: Azure secret used for app login page. If azure login parameters are given okta parameters are not required"
+    Type: String
+  AzureRedirectUri:
+    Default: ""
+    Description: "Conditional: Azure redirect uri used for app login page. If azure login parameters are given okta parameters are not required"
+    Type: String
+  OktaDomain:
+    Default: ""
+    Description: "Conditional: Okta domain used for app login page. If okta login parameters are given azure parameters are not required"
+    Type: String
+  OktaServerId:
+    Default: ""
+    Description: "Conditional: Okta server id used for app login page. If okta login parameters are given azure parameters are not required"
+    Type: String
+  OktaClientId:
+    Default: ""
+    Description: "Conditional: Okta client Id used for app login page. If okta login parameters are given azure parameters are not required"
+    Type: String
+  OktaSecret:
+    Default: ""
+    Description: "Conditional: Okta secret used for app login page. If okta login parameters are given azure parameters are not required"
+    Type: String
+  OktaRedirectUrl:
+    Default: ""
+    Description: "Conditional: Okta Redirect Url used for app login page. If okta login parameters are given azure parameters are not required"
+    Type: String
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
   UseJWTKeysSecret: !Not [ !Equals [ AWS::NoValue, !Ref JWTKeysSecretName ] ]
   ConfigureEKS: !Equals ['true', !Ref ConfigureEKS]
+  ConfigureDNS: !Not [ !Equals [ "", !Ref HostedZoneId ] ]
 
 Resources:
   EKSCluster:
@@ -257,10 +327,29 @@ Resources:
         JWTPrivateKey: !If [UseJWTKeysSecret, !Sub '{{resolve:secretsmanager:${JWTKeysSecretName}:SecretString:private_key}}', !Ref JWTPrivateKey]
         JWTPublicKey: !If [UseJWTKeysSecret, !Sub '{{resolve:secretsmanager:${JWTKeysSecretName}:SecretString:public_key}}', !Ref JWTPublicKey]
         EKSClusterName: !Ref EKSClusterName
-        Data3DecVolumeID: !GetAtt EBSStack.Outputs.DataVolumeID
-        CollectionVolumeID: !GetAtt EBSStack.Outputs.CollectionVolumeID
+        DataPubVolumeID: !GetAtt EBSStack.Outputs.DataPubVolumeID
         ChoralVolumeID: !GetAtt EBSStack.Outputs.ChoralVolumeID
         DBConnectionString: !GetAtt RDSStack.Outputs.PrimaryConnectionString
         DBPassword: !Ref DBPassword
-        EtlUser: !Ref EtlUser
-        EtlPassword: !Ref EtlPassword
+        DomainName: !Ref DomainName
+        AzureTenant: !Ref AzureTenant
+        AzureClientId: !Ref AzureClientId
+        AzureSecret: !Ref AzureSecret
+        AzureRedirectUri: !Ref AzureRedirectUri
+        OktaDomain: !Ref OktaDomain
+        OktaServerId: !Ref OktaServerId
+        OktaClientId: !Ref OktaClientId
+        OktaSecret: !Ref OktaSecret
+        OktaRedirectUrl: !Ref OktaRedirectUrl
+  3decisionDNSStack:
+    Type: AWS::CloudFormation::Stack
+    Condition: ConfigureDNS
+    DependsOn: 3decisionKubeStack
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/discngine-3decision-dns.template.yaml'
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      Parameters:
+        HostedZoneId: !Ref HostedZoneId
+        DomainName: !Ref DomainName

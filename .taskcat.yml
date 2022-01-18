@@ -3,6 +3,7 @@ project:
   owner: quickstart-eng@amazon.com
   regions:
   - eu-central-1
+  - us-east-1
   template: templates/discngine-3decision-main.template.yaml
   s3_regional_buckets: true
   parameters:
@@ -15,11 +16,11 @@ tests:
   new-vpc:
     regions:
       - eu-central-1
+      - us-east-1
     parameters:
       AvailabilityZones: $[taskcat_genaz_3]
-      KeyPairName: key
-      JWTPrivateKey: private
-      JWTPublicKey: public
-      EtlPassword: password
+      KeyPairName: keypair
+      JWTPrivateKey: base64privatekey
+      JWTPublicKey: base64pubkey
       DBPassword: password
     template: templates/discngine-3decision-main.template.yaml

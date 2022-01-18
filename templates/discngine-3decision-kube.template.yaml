@@ -27,23 +27,30 @@ Parameters:
     NoEcho: true
   DBConnectionString:
     Type: String
-  CollectionVolumeID:
-    Type: String
-  Data3DecVolumeID:
+  DataPubVolumeID:
     Type: String
   ChoralVolumeID:
     Type: String
-  EtlUser:
+  DomainName:
     Type: String
-  EtlPassword:
+  AzureTenant:
     Type: String
-    NoEcho: true
-  EtlServiceName:
-    Default: etl
+  AzureClientId:
     Type: String
-Mappings:
-  Config:
-    Prefix: { Value: 'eks-quickstart' }
+  AzureSecret:
+    Type: String
+  AzureRedirectUri:
+    Type: String
+  OktaDomain:
+    Type: String
+  OktaServerId:
+    Type: String
+  OktaClientId:
+    Type: String
+  OktaSecret:
+    Type: String
+  OktaRedirectUrl:
+    Type: String
 Resources:
   TDecisionNamespace:
     Type: "AWSQS::Kubernetes::Resource"
@@ -55,6 +62,18 @@ Resources:
         apiVersion: v1
         metadata:
           name: ${TNamespace}
+  CertManagerChart:
+    Type: "AWSQS::Kubernetes::Helm"
+    Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
+    Properties:
+      ClusterID: !Ref EKSClusterName
+      Name: cert-manager
+      Namespace: cert-manager
+      Repository: https://charts.jetstack.io
+      Chart: cert-manager
+      Version: 1.6.1
+      Values:
+        installCRDs: true
   RabbitMQChart:
     Type: "AWSQS::Kubernetes::Helm"
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
@@ -117,70 +136,34 @@ Resources:
               requests:
                 cpu: 150m
                 memory: 250Mi
-  ETLIngress:
-    Type: "AWSQS::Kubernetes::Resource"
-    DependsOn: TDecisionNamespace
-    Properties:
-      ClusterName: !Ref EKSClusterName
-      Namespace: !Ref TNamespace
-      Manifest: !Sub |
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        metadata:
-          name: ${TNamespace}-3decision-${EtlServiceName}-ingress
-          annotations:
-            kubernetes.io/ingress.class: alb
-            alb.ingress.kubernetes.io/scheme: internet-facing
-            alb.ingress.kubernetes.io/load-balancer-name: lb-3dec-etl
-        spec:
-          rules:
-          - http:
-              paths:
-              - path: /
-                pathType: Prefix
-                backend:
-                  service:
-                    name: ${TNamespace}-3decision-aws-${EtlServiceName}
-                    port: 
-                      number: 9944
-  DNSName:
-    Type: Custom::CliQuery
-    DependsOn: ETLIngress
-    Properties:
-      ServiceToken: !Sub ['arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:${Prefix}-ResourceReader', {Prefix: !FindInMap [Config, Prefix, Value]}]
-      AwsCliCommand: !Sub "elbv2 describe-load-balancers --names lb-3dec-etl --query 'LoadBalancers[0].{DNSName: DNSName}'"
-      IdField: 'DNSName'
   TdecisionChart:
     Type: "AWSQS::Kubernetes::Helm"
-    DependsOn: [ JWTSecret, DNSName, RabbitMQChart ]
+    DependsOn: [ JWTSecret, RabbitMQChart ]
     Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
     Properties:
       ClusterID: !Ref EKSClusterName
       Name: tdecision
       Namespace: !Ref TNamespace
-      Chart: oci://fra.ocir.io/discngine1/3decision_kube/3decision-aws:latest
+      Chart: oci://fra.ocir.io/discngine1/3decision_kube/3decision-helm:0.0.3-aws
       Values:
+        ingress.host: !Ref DomainName
         nodeCloud.volumes.jwtSecret.name: !Ref JWTSecretName
         oracle.password: !Ref DBPassword
         oracle.connectionString: !Ref DBConnectionString
-        etl.name: !Ref EtlServiceName
-        etl.volumes.data3dec.awsElasticBlockStore.volumeID: !Ref Data3DecVolumeID
-        etl.volumes.collection.awsElasticBlockStore.volumeID: !Ref CollectionVolumeID
-        etl.user: !Ref EtlUser
-        etl.password: !Ref EtlPassword
-        volumes.availabilityZone: !Select [ 2, Fn::GetAZs: !Ref 'AWS::Region' ]
-        etl.dns: !Ref DNSName
-  ChoralChart:
-    Type: "AWSQS::Kubernetes::Helm"
-    DependsOn: ChangeDBPass
-    Metadata: { cfn-lint: { config: { ignore_checks: [ E3012 ] } } }
-    Properties:
-      ClusterID: !Ref EKSClusterName
-      Name: choral
-      Namespace: choral
-      Chart: oci://fra.ocir.io/discngine1/3decision_kube/choral-helm:latest
-      Values:
-        oracle.password: !Ref DBPassword
-        oracle.connectionString: !Ref DBConnectionString
-        pv.awsElasticBlockStore.volumeID: !Ref ChoralVolumeID
-        pv.availabilityZone: !Select [ 1, Fn::GetAZs: !Ref 'AWS::Region' ]
+        volumes.claimPods.backend.publicdata.awsElasticBlockStore.volumeID: !Ref DataPubVolumeID
+        volumes.claimPods.backend.publicdata.awsElasticBlockStore.fsType: ext4
+        volumes.claimPods.backend.publicdata.awsElasticBlockStore.availabilityZone: !Select [ 2, Fn::GetAZs: !Ref 'AWS::Region' ]
+        choral.oracle.password: !Ref DBPassword
+        choral.oracle.connectionString: !Ref DBConnectionString
+        choral.pv.awsElasticBlockStore.volumeID: !Ref ChoralVolumeID
+        choral.pv.availabilityZone: !Select [ 1, Fn::GetAZs: !Ref 'AWS::Region' ]
+        nest.env.internal_api_key.value: !Select [2, !Split ['/', !Ref AWS::StackId]]
+        next.env.okta_domain.value: !Ref OktaDomain
+        next.env.okta_server_id.value: !Ref OktaServerId
+        next.env.okta_client_id.value: !Ref OktaClientId
+        next.env.okta_secret.value: !Ref OktaSecret
+        next.env.okta_redirect_uri.value: !Ref OktaRedirectUrl
+        next.env.azure_tenant.value: !Ref AzureTenant
+        next.env.azure_client_id.value: !Ref AzureClientId
+        next.env.azure_secret.value: !Ref AzureSecret
+        next.env.azure_redirect_uri.value: !Ref AzureRedirectUri
