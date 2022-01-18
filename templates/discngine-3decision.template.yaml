@@ -20,6 +20,7 @@ Metadata:
         Parameters:
           - HostedZoneId
           - DomainName
+          - CertificateArn
       - Label:
           default : Discngine 3decision database configuration
         Parameters:
@@ -92,6 +93,8 @@ Metadata:
         default: Route 53 hosted zone Id
       DomainName:
         default: Domain name used for load balancing
+      CertificateArn:
+        default: Arn of a certificate
       AzureTenant:
         default: Azure tenant
       AzureClientId:
@@ -235,6 +238,10 @@ Parameters:
     Default: ""
     Description: "Required: Domain name used for load balancer rules"
     Type: String
+  CertificateArn:
+    Default: ""
+    Description: "Optional: Arn of a certificate of the associated domain you want added to the load balancer"
+    Type: String
   AzureTenant:
     Default: ""
     Description: "Conditional: Azure tenant used for app login page. If azure login parameters are given okta parameters are not required"
@@ -332,6 +339,7 @@ Resources:
         DBConnectionString: !GetAtt RDSStack.Outputs.PrimaryConnectionString
         DBPassword: !Ref DBPassword
         DomainName: !Ref DomainName
+        CertificateArn: !Ref CertificateArn
         AzureTenant: !Ref AzureTenant
         AzureClientId: !Ref AzureClientId
         AzureSecret: !Ref AzureSecret

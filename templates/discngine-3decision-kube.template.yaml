@@ -33,6 +33,8 @@ Parameters:
     Type: String
   DomainName:
     Type: String
+  CertificateArn:
+    Type: String
   AzureTenant:
     Type: String
   AzureClientId:
@@ -158,12 +160,13 @@ Resources:
         choral.pv.awsElasticBlockStore.volumeID: !Ref ChoralVolumeID
         choral.pv.availabilityZone: !Select [ 1, Fn::GetAZs: !Ref 'AWS::Region' ]
         nest.env.internal_api_key.value: !Select [2, !Split ['/', !Ref AWS::StackId]]
-        next.env.okta_domain.value: !Ref OktaDomain
-        next.env.okta_server_id.value: !Ref OktaServerId
-        next.env.okta_client_id.value: !Ref OktaClientId
-        next.env.okta_secret.value: !Ref OktaSecret
-        next.env.okta_redirect_uri.value: !Ref OktaRedirectUrl
-        next.env.azure_tenant.value: !Ref AzureTenant
-        next.env.azure_client_id.value: !Ref AzureClientId
-        next.env.azure_secret.value: !Ref AzureSecret
-        next.env.azure_redirect_uri.value: !Ref AzureRedirectUri
+        nest.env.okta_domain.value: !Ref OktaDomain
+        nest.env.okta_server_id.value: !Ref OktaServerId
+        nest.env.okta_client_id.value: !Ref OktaClientId
+        nest.env.okta_secret.value: !Ref OktaSecret
+        nest.env.okta_redirect_uri.value: !Ref OktaRedirectUrl
+        nest.env.azure_tenant.value: !Ref AzureTenant
+        nest.env.azure_client_id.value: !Ref AzureClientId
+        nest.env.azure_secret.value: !Ref AzureSecret
+        nest.env.azure_redirect_uri.value: !Ref AzureRedirectUri
+        ingress.certificateArn: !Ref CertificateArn
