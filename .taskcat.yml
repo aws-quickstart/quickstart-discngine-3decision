@@ -24,4 +24,5 @@ tests:
       JWTPublicKey: base64PubKey
       EtlPassword: pass
       DBPassword: pass
+      DomainName: example.com
     template: templates/discngine-3decision-main.template.yaml

@@ -37,8 +37,8 @@ Metadata:
       - Label:
           default: Discngine 3decision dns configuration
         Parameters:
-          - HostedZoneId
           - DomainName
+          - HostedZoneId
           - CertificateArn
           - TdecRecordName
           - EtlRecordName
@@ -362,7 +362,6 @@ Parameters:
     Description: "Optional: Creates dns records for the given route 53 hosted zone if given."
     Type: String
   DomainName:
-    Default: ""
     Description: "Required: Domain name used for load balancer rules"
     Type: String
   CertificateArn:
