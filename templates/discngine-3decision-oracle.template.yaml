@@ -135,14 +135,14 @@ Resources:
     Type: AWS::EC2::SecurityGroupIngress
     Condition: AddSecurityRule
     Properties:
-      IpProtocol: -1
+      IpProtocol: "-1"
       SourceSecurityGroupId: !GetAtt DBSecurityGroup.GroupId
       GroupId: !Ref NodeSecurityGroupId
   PrimaryDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
-      AllocatedStorage: '1024'
-      MaxAllocatedStorage: '3072'
+      AllocatedStorage: "1024"
+      MaxAllocatedStorage: 3072
       CharacterSetName: AL32UTF8
       DBInstanceClass: !Ref DBInstanceClass
       DBInstanceIdentifier: !Ref DBInstanceIdentifier

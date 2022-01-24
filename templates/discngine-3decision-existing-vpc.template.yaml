@@ -13,13 +13,13 @@ Metadata:
       - Label:
           default: "Network configuration"
         Parameters:
-          - VPCCIDR
-          - PublicSubnet1CIDR
-          - PublicSubnet2CIDR
-          - PublicSubnet3CIDR
-          - PrivateSubnet1CIDR
-          - PrivateSubnet2CIDR
-          - PrivateSubnet3CIDR
+          - VPCID
+          - PublicSubnet1ID
+          - PublicSubnet2ID
+          - PublicSubnet3ID
+          - PrivateSubnet1ID
+          - PrivateSubnet2ID
+          - PrivateSubnet3ID
           - RemoteAccessCIDR
       - Label:
           default: Amazon EC2 configuration
@@ -71,18 +71,18 @@ Metadata:
     ParameterLabels:
       KeyPairName:
         default: SSH key name
-      PrivateSubnet1CIDR:
-        default: Private subnet 1 CIDR
-      PrivateSubnet2CIDR:
-        default: Private subnet 2 CIDR
-      PrivateSubnet3CIDR:
-        default: Private subnet 3 CIDR
-      PublicSubnet1CIDR:
-        default: Public subnet 1 CIDR
-      PublicSubnet2CIDR:
-        default: Public subnet 2 CIDR
-      PublicSubnet3CIDR:
-        default: Public subnet 3 CIDR
+      PrivateSubnet1ID:
+        default: Private subnet 1 ID
+      PrivateSubnet2ID:
+        default: Private subnet 2 ID
+      PrivateSubnet3ID:
+        default: Private subnet 3 ID
+      PublicSubnet1ID:
+        default: Public subnet 1 ID
+      PublicSubnet2ID:
+        default: Public subnet 2 ID
+      PublicSubnet3ID:
+        default: Public subnet 3 ID
       QSS3BucketName:
         default: Quick Start S3 bucket name
       QSS3BucketRegion:
@@ -91,8 +91,8 @@ Metadata:
         default: Quick Start S3 key prefix
       RemoteAccessCIDR:
         default: Allowed external access CIDR
-      VPCCIDR:
-        default: VPC CIDR
+      VPCID:
+        default: VPC ID
       PerAccountSharedResources:
         default: Per account shared resources
       PerRegionSharedResources:

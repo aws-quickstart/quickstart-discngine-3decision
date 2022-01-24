@@ -44,9 +44,6 @@ Parameters:
     Type: String
   EtlRecordName:
     Type: String
-Mappings:
-  Config:
-    Prefix: { Value: 'eks-quickstart' }
 Resources:
   TDecisionNamespace:
     Type: "AWSQS::Kubernetes::Resource"
