@@ -12,6 +12,10 @@ Parameters:
     Type: String
   DomainName:
     Type: String
+  TdecRecordName:
+    Type: String
+  EtlRecordName:
+    Type: String
 Mappings:
   Config:
     Prefix: { Value: 'eks-quickstart' }
@@ -36,9 +40,9 @@ Resources:
         EvaluateTargetHealth: true
         HostedZoneId: !Ref CanonicalHostedZoneId
       HostedZoneId: !Ref HostedZoneId
-      Name: !Sub "3decision-kube.${DomainName}"
+      Name: !Sub "${TdecRecordName}.${DomainName}"
       Type: A
-  tdecDebugRecord:
+  tdecEtlRecord:
     Type: "AWS::Route53::RecordSet"
     Properties:
       AliasTarget:
@@ -46,25 +50,5 @@ Resources:
         EvaluateTargetHealth: true
         HostedZoneId: !Ref CanonicalHostedZoneId
       HostedZoneId: !Ref HostedZoneId
-      Name: !Sub "3decision-kube-debug.${DomainName}"
-      Type: A
-  tdecApiRecord:
-    Type: "AWS::Route53::RecordSet"
-    Properties:
-      AliasTarget:
-        DNSName: !Ref DNSName
-        EvaluateTargetHealth: true
-        HostedZoneId: !Ref CanonicalHostedZoneId
-      HostedZoneId: !Ref HostedZoneId
-      Name: !Sub "api.3decision-kube.${DomainName}"
-      Type: A
-  tdecWikiRecord:
-    Type: "AWS::Route53::RecordSet"
-    Properties:
-      AliasTarget:
-        DNSName: !Ref DNSName
-        EvaluateTargetHealth: true
-        HostedZoneId: !Ref CanonicalHostedZoneId
-      HostedZoneId: !Ref HostedZoneId
-      Name: !Sub "3decision-kube-help.${DomainName}"
+      Name: !Sub "${EtlRecordName}.${DomainName}"
       Type: A
