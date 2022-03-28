@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "This creates an EKS cluster, and sets up Discngine 3decision infrastructure. (qs-1snm79fed)."
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: "Launch into an existing VPC"
+    EntrypointName: "Parameters for launching into an existing VPC"
   LintSpellExclude:
     - Discngine
     - 3decision
@@ -53,7 +53,7 @@ Metadata:
           - DBInstanceClass
           - DBMultiZone
       - Label:
-          default: Discngine 3decision kube configuration
+          default: Discngine 3decision Kubernetes configuration
         Parameters:
           - EtlUser
           - EtlPassword
@@ -87,7 +87,7 @@ Metadata:
       QSS3BucketName:
         default: Quick Start S3 bucket name
       QSS3BucketRegion:
-        default: Quick Start S3 bucket region
+        default: Quick Start S3 bucket Region
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
       RemoteAccessCIDR:
@@ -103,9 +103,9 @@ Metadata:
       NumberOfNodes:
         default: Number of nodes
       AdditionalEKSAdminUserArn:
-        default: Additional EKS admin ARN (IAM user)
+        default: Additional Amazon EKS admin ARN (IAM user)
       AdditionalEKSAdminRoleArn:
-        default: Additional EKS admin ARN (IAM role)
+        default: Additional Amazon EKS admin ARN (IAM role)
       ConfigSetName:
         default: Config set name
       NodeVolumeSize:
@@ -119,7 +119,7 @@ Metadata:
       DBInstanceClass:
         default: Instance type of the database
       DBMultiZone:
-        default: Whether the DB is highly available
+        default: Database highly available
       TNamespace:
         default: 3decision Helm chart namespace
       JWTPrivateKey:
@@ -127,9 +127,9 @@ Metadata:
       JWTPublicKey:
         default: Public SSH key in base 64 used for JWT
       EtlUser:
-        default: Username used for etl
+        default: Username used for ETL
       EtlPassword:
-        default: Password used for etl
+        default: Password used for ETL
       HostedZoneId:
         default: Route 53 hosted zone Id
       DomainName:
@@ -139,21 +139,20 @@ Metadata:
       TdecRecordName:
         default: Record name of main 3decision page
       EtlRecordName:
-        default: Record name of etl page
+        default: Record name of ETL page
       LoadBalancerType:
-        default: Type of loadbalancer created
+        default: Type of load balancer created
       ProvisionBastionHost:
-        default: Whether to provision a bastion host
+        default: Provision a bastion host
 Parameters:
   KeyPairName:
     Description: A public/private key pair, which allows you to connect securely to your instance after it launches.
     Type: AWS::EC2::KeyPair::KeyName
-    ConstraintDescription: Must be the name of an existing Keyname
+    ConstraintDescription: Must be an existing key name.
   NodeInstanceType:
     Type: String
     Default: t3.xlarge
-    Description: EKS node instance type.
-                 We recommend using t3.xlarge as this is the minimal required node shape, but scaling is not noticeable by scaling this up.
+    Description: Amazon EKS node instance type. We recommend that you use t3.xlarge, the minimum required node shape.
     AllowedValues:
       - t3.xlarge
       - t3.2xlarge

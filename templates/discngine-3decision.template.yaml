@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: "This template sets up Discngine 3decision infrastructure. (qs-1snm79fb4)."
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: "Launch into an existing EKS cluster"
+    EntrypointName: "Parameters for launching into an existing Amazon EKS cluster"
   LintSpellExclude:
     - Discngine
     - 3decision
@@ -34,7 +34,7 @@ Metadata:
           - DBInstanceClass
           - DBMultiZone
       - Label:
-          default: Discngine 3decision kube configuration
+          default: Discngine 3decision Kubernetes configuration
         Parameters:
           - EtlUser
           - EtlPassword
@@ -56,7 +56,7 @@ Metadata:
       QSS3BucketName:
         default: Quick Start S3 bucket name
       QSS3BucketRegion:
-        default: Quick Start S3 bucket region
+        default: Quick Start S3 bucket Region
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
       DBInstanceIdentifier:
@@ -66,11 +66,11 @@ Metadata:
       DBPassword:
         default: Password of the database
       DBSubnets:
-        default: Subnets in the db subnet group
+        default: Subnets in the database subnet group
       DBInstanceClass:
         default: Instance type of the database
       DBMultiZone:
-        default: Whether the DB is highly available
+        default: Database highly available
       TNamespace:
         default: 3decision Helm chart namespace
       JWTPrivateKey:
@@ -78,26 +78,26 @@ Metadata:
       JWTPublicKey:
         default: Public SSH key in base 64 used for JWT
       EtlUser:
-        default: Username used for etl
+        default: Username used for ETL
       EtlPassword:
-        default: Password used for etl
+        default: Password used for ETL
       ConfigureEKS:
-        default: Boolean determining whether to configure EKS
+        default: Configure Amazon EKS
       HostedZoneId:
-        default: Route 53 hosted zone Id
+        default: Route 53 hosted zone ID
       DomainName:
         default: Domain name used for load balancing
       CertificateArn:
-        default: Arn of a certificate
+        default: ARN of a certificate
       TdecRecordName:
         default: Record name of main 3decision page
       EtlRecordName:
-        default: Record name of etl page
+        default: Record name of ETL page
       LoadBalancerType:
-        default: Type of loadbalancer created
+        default: Type of load balancer created
 Parameters:
   EKSClusterName:
-    Description: "Required: The name of the EKS cluster in which the stacks will be deployed"
+    Description: (Required) Name of the Amazon EKS cluster into which the stacks are deployed.
     Type: String
   VPCID:
     Type: String
