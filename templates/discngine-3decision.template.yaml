@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: "This template sets up Discngine 3decision infrastructure. (qs-1snm79fb4)."
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: "Launch into an existing EKS cluster"
+    EntrypointName: "Parameters for launching into an existing Amazon EKS cluster"
   LintSpellExclude:
     - Discngine
     - 3decision
@@ -34,7 +34,7 @@ Metadata:
           - DBInstanceClass
           - DBMultiZone
       - Label:
-          default: Discngine 3decision kube configuration
+          default: Discngine 3decision Kubernetes configuration
         Parameters:
           - EtlUser
           - EtlPassword
@@ -56,7 +56,7 @@ Metadata:
       QSS3BucketName:
         default: Quick Start S3 bucket name
       QSS3BucketRegion:
-        default: Quick Start S3 bucket region
+        default: Quick Start S3 bucket Region
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
       DBInstanceIdentifier:
@@ -66,11 +66,11 @@ Metadata:
       DBPassword:
         default: Password of the database
       DBSubnets:
-        default: Subnets in the db subnet group
+        default: Subnets in the database subnet group
       DBInstanceClass:
         default: Instance type of the database
       DBMultiZone:
-        default: Whether the DB is highly available
+        default: Database highly available
       TNamespace:
         default: 3decision Helm chart namespace
       JWTPrivateKey:
@@ -78,80 +78,93 @@ Metadata:
       JWTPublicKey:
         default: Public SSH key in base 64 used for JWT
       EtlUser:
-        default: Username used for etl
+        default: Username used for ETL
       EtlPassword:
-        default: Password used for etl
+        default: Password used for ETL
       ConfigureEKS:
-        default: Boolean determining whether to configure EKS
+        default: Configure Amazon EKS
       HostedZoneId:
-        default: Route 53 hosted zone Id
+        default: Route 53 hosted zone ID
       DomainName:
         default: Domain name used for load balancing
       CertificateArn:
-        default: Arn of a certificate
+        default: ARN of a certificate
       TdecRecordName:
         default: Record name of main 3decision page
       EtlRecordName:
-        default: Record name of etl page
+        default: Record name of ETL page
       LoadBalancerType:
-        default: Type of loadbalancer created
+        default: Type of load balancer created
 Parameters:
   EKSClusterName:
-    Description: "Required: The name of the EKS cluster in which the stacks will be deployed"
+    Description: (Required) Name of the Amazon EKS cluster into which the stacks are deployed.
     Type: String
   VPCID:
     Type: String
-    Description: "Required: The id of the VPC in which the EKS cluster is deployed"
+    Description: (Required) ID of the VPC in which the Amazon EKS cluster is deployed.
   QSS3BucketName:
-    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
-    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
-      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
-      (-).
+    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    ConstraintDescription:
+      The Quick Start bucket name can include numbers, lowercase
+      letters, uppercase letters, and hyphens (-). It cannot start or end with a 
+      hyphen (-).
     Default: aws-quickstart
-    Description: S3 bucket name for the Quick Start assets. This string can include
-      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
-      or end with a hyphen (-).
+    Description:
+      Name of the S3 bucket for your copy of the Quick Start assets. 
+      Keep the default name unless you are customizing the template. 
+      Changing the name updates code references to point to a new Quick 
+      Start location. This name can include numbers, lowercase letters, 
+      uppercase letters, and hyphens, but do not start or end with a hyphen (-). 
+      See https://aws-quickstart.github.io/option1.html.
     Type: String
   QSS3BucketRegion:
-    Default: 'eu-central-1'
-    Description: "The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value."
+    Default: 'us-east-1'
+    Description: 'AWS Region where the Quick Start S3 bucket (QSS3BucketName) is 
+    hosted. Keep the default Region unless you are customizing the template. 
+    Changing this Region updates code references to point to a new Quick Start location. 
+    When using your own bucket, specify the Region. 
+    See https://aws-quickstart.github.io/option1.html.'
     Type: String
   QSS3KeyPrefix:
-    AllowedPattern: ^[0-9a-zA-Z-/]*$
-    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
-      uppercase letters, hyphens (-), and forward slash (/).
+    AllowedPattern: '^[0-9a-zA-Z-/]*$'
+    ConstraintDescription:
+      The Quick Start S3 key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), and forward slashes (/). The prefix should
+      end with a forward slash (/).
     Default: quickstart-discngine-3decision/
-    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
-      can include numbers, lowercase letters, uppercase letters, hyphens (-), and
-      forward slash (/).
+    Description:
+      S3 key prefix that is used to simulate a folder for your copy of the 
+      Quick Start assets. Keep the default prefix unless you are customizing 
+      the template. Changing this prefix updates code references to point to 
+      a new Quick Start location. This prefix can include numbers, lowercase 
+      letters, uppercase letters, hyphens (-), and forward slashes (/). End with 
+      a forward slash. See https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html 
+      and https://aws-quickstart.github.io/option1.html.
     Type: String
   DBInstanceIdentifier:
     Default: db3dec
-    Description: "Optional: The database instance name.
-                  This defaults to db3dec."
+    Description: Database instance name. The default is db3dec.
     Type: String
     MinLength: '1'
     MaxLength: '8'
     AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
-    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+    ConstraintDescription: Must begin with a letter and contain only alphanumeric characters.
   DBName:
     Default: ORCL
-    Description: "Optional: The name given to the RDS Oracle database.
-                  This defaults to ORCL."
+    Description: Amazon RDS Oracle database name. The default is ORCL.
     Type: String
     MinLength: '1'
     MaxLength: '8'
     AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
-    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+    ConstraintDescription: Must begin with a letter and contain only alphanumeric characters.
   DBPassword:
     NoEcho: true
-    Description: "Required: The database admin account password."
+    Description: Database administrator account password.
     Type: String
     MinLength: '8'
     MaxLength: '41'
   DBSubnets:
-    Description: 'Required: Subnets to use for the creation of the db subnet group.
-                  These need to be the same subnets as the ones containing your eks nodes'
+    Description: Subnets to use for the creation of the db subnet group. These must be the same subnets as the ones containing your Amazon EKS nodes.
     Type: CommaDelimitedList
   DBInstanceClass:
     AllowedValues:
@@ -166,84 +179,72 @@ Parameters:
       - db.m5.2xlarge
       - db.m5.4xlarge
     Default: db.t3.medium
-    Description: Amazon RDS instance type for the Oracle Database instance.
-                 We recommend t3.xlarge for production use as a lower shape will be rather slow.
+    Description: Amazon RDS instance type for the Oracle Database instance. We recommend t3.xlarge for production.
     Type: String
   DBMultiZone:
-    Description: High Availability (Multi-AZ) for Oracle RDS.
-        More informtion is available here - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html
+    Description: High Availability (Multi-AZ) for Oracle RDS. For more information, refer to https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html.
     Type: String
     AllowedValues: [ 'true', 'false' ]
     Default: 'true'
   TNamespace:
     Default: tdecision
-    Description: "Optional: The name of the kubernetes namespace in which the 3decision helm chart will be deployed.
-                  This will default to tdecision if not given.
-                  The namespace will be created if it doesn't already exists."
+    Description: (Optional) Name of the Kubernetes namespace in which the 3decision helm chart will be deployed. This default to tdecision. The namespace will be created if it doesn't already exist.
     Type: String
   JWTKeysSecretName:
     Default: ""
-    Description: "Conditional: The name of a secret in SecretsManager containing base64 keys in fields private_key and public_key.
-                  If used, you need to disable wrapping and paste the base64 encoded strings that you can retrieve by running 'base64 -w0 id_rsa' and 'base64 -w0 id_rsa.pub'.
-                  By default, this will have no value, in which case the variables JWTPrivateKey and JWTPublicKey will be used."
+    Description: The name of a secret in SecretsManager containing base64 keys in fields private_key and public_key. If used, you must disable wrapping and paste the base64 encoded strings that retrieve by running 'base64 -w0 id_rsa' and 'base64 -w0 id_rsa.pub'. By default, this will have no value, in which case the variables JWTPrivateKey and JWTPublicKey are used.
     Type: String
   JWTPrivateKey:
     Default: ""
-    Description: "Conditional: An SSH private key in base64 format.
-                  You need to disable wrapping and paste the base64 encoded string that you can retrieve by running 'base64 -w0 id_rsa'.
-                  If JWTKeysSecretName is set, this variable is not used"
+    Description: SSH private key in base64 format. You must disable wrapping and paste the base64 encoded string that you can retrieve by running 'base64 -w0 id_rsa'. If JWTKeysSecretName is set, this variable is not used.
     Type: String
     NoEcho: true
   JWTPublicKey:
     Default: ""
-    Description: "Conditional: An SSH public key in base64 format.\n
-                  You need to disable wrapping and paste the base64 encoded string that you can retrieve by running 'base64 -w0 id_rsa.pub'.\n
-                  If JWTKeysSecretName is set, this variable is not used"
+    Description: SSH public key in base64 format. You must disable wrapping and paste the base64 encoded string that you can retrieve by running 'base64 -w0 id_rsa.pub'. If JWTKeysSecretName is set, this variable is not used.
     Type: String
   EtlUser:
     Default: "3decision"
-    Description: "Required: The username that will allow you to connect to the platform"
+    Description: 3decision username.
     Type: String
   EtlPassword:
-    Description: "Required: The password that will allow you to connect to the platform"
+    Description: 3decision password.
     Type: String
     NoEcho: true
   ConfigureEKS:
-    Description: "Optionnal: Set to true to create EKS quickstart specific resources for your EKS cluster"
+    Description: (Optional) Choose true to create resources for your EKS cluster that are specific to Amazon EKS Quick Start.
     Default: 'false'
     Type: String
     AllowedValues: ['true', 'false']
   NodeSecurityGroup:
-    Description: "Optionnal: Id of the EKS SecurityGroup in which we will add the RDS ingress"
+    Description: (Optional) ID of the Amazon EKS security group in which to add the RDS ingress.
     Default: ''
     Type: String
   HostedZoneId:
     Default: ""
-    Description: "Optional: Creates dns records for the given route 53 hosted zone if given."
+    Description: (Optional) Create DNS records for the Route 53 hosted zone.
     Type: String
   DomainName:
-    Description: "Required: Root domain name used for load balancer rules
-                  This is only the root domain name not the fqdn, eg: example.com"
+    Description: Root domain name used for load balancer rules. This is only the root domain name, not the FQDN (e.g., example.com).
     Type: String
   CertificateArn:
     Default: ""
-    Description: "Optional: Arn of a certificate of the associated domain you want added to the load balancer"
+    Description: (Optional) ARN of a certificate of the associated domain you want added to the load balancer.
     Type: String
   TdecRecordName:
     Default: "3decision"
-    Description: "Subpath of the main 3decision page. Will add route to hostedZone if given as recordName.domainName"
+    Description: Subpath of the main 3decision page. Will add route to hostedZone if given as recordName.domainName.
     Type: String
   EtlRecordName:
     Default: "3decision-etl"
-    Description: "Subpath of the 3decision etl page. Will add route to hostedZone if given as recordName.domainName"
+    Description: Subpath of the 3decision ETL page. Will add route to hostedZone if given as recordName.domainName.
     Type: String
   LoadBalancerType:
     AllowedValues:
       - internet-facing
       - internal
     Default: "internal"
-    Description: "Type of loadbalancer created.
-                  This can either be equal to internet-facing for public loadbalancer or internal for private loadbalancers"
+    Description: Type of load balancer created. This can either be internet-facing for a public load balancer or internal for private load balancers.
     Type: String
 
 Rules:
